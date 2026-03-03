@@ -1,0 +1,20 @@
+@import url("https://use.typekit.net/wie4ydt.css");
+@import "tailwindcss";
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #0a0a0a;
+  color: #f5f5f5;
+  font-family: "trajan-pro-3", serif;
+}
+
+/* Body / paragraph text uses Myriad Pro */
+.font-body {
+  font-family: "myriad-pro", "Helvetica Neue", Arial, sans-serif;
+}
