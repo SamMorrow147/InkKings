@@ -15,6 +15,7 @@ import {
   Vector3,
 } from "three";
 import LiquidBackground from "./LiquidBackground";
+import PortfolioSlideshow from "./PortfolioSlideshow";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const clamp = (v: number, lo: number, hi: number) =>
@@ -161,18 +162,26 @@ function CrownScene({
     }
 
     // ── scale (base × intro zoom multiplier) ──────────────────────────────
+    // On desktop, shrink crown smoothly when entering profile sections (progress 2.0→2.5)
+    // so it frames the circular portrait without overwhelming it. Mobile stays fixed.
     const baseScale = isMobile ? 2.0 : 5.0;
-    groupRef.current.scale.setScalar(baseScale * introMultiplier);
+    const desktopProfileScale = isMobile
+      ? 1.0
+      : MathUtils.lerp(1.0, 0.45, clamp((progress - 2.0) / 0.5, 0, 1));
+    groupRef.current.scale.setScalar(baseScale * introMultiplier * desktopProfileScale);
 
     // ── position ──────────────────────────────────────────────────────────
     const baseX = isMobile ? -viewport.width * 0.4 : -viewport.width * 0.5;
 
     const targetX = baseX * (1 - centerState);
 
-    // §4 lift starts at the same time as T2 centering (progress 2.0) so both
-    // movements — slide to center + rise up — happen in one smooth motion
+    // Profile sections: mobile lifts up, desktop nudges down slightly
     const section4State = clamp((progress - 2.0) / 0.5, 0, 1);
-    const section4Lift  = section4State * (isMobile ? viewport.height * 0.22 : viewport.height * 0.2);
+    const section4Lift = section4State * (
+      isMobile
+        ?  viewport.height * 0.22
+        : viewport.height * 0.18
+    );
     const targetY = section4Lift;
 
     groupRef.current.position.x = MathUtils.lerp(
@@ -395,25 +404,44 @@ function SectionsText() {
 // ─── artist profiles ─────────────────────────────────────────────────────────
 const profiles = [
   {
-    name:   "Steve De Los Reyes",
-    status: "Books Are Currently Closed",
-    eyebrow: "Ink Kings",
-    bio:    "Award-winning artist and owner of Ink Kings Tattoo in Otsego, MN. With over 30 years as an artist and a degree in Technical Illustration from Cal State Fullerton, Steve brings expertise in realism, portraits, and wildlife. Tattooing since 2009 — opening Ink Kings in 2016.",
-    photo:  "/Steve.png",
+    name:        "Steve De Los Reyes",
+    status:      "Books Are Currently Closed",
+    bio:         "Award-winning artist and owner of Ink Kings Tattoo in Otsego, MN. With over 30 years as an artist and a degree in Technical Illustration from Cal State Fullerton, Steve brings expertise in realism, portraits, and wildlife. Tattooing since 2009 — opening Ink Kings in 2016.",
+    photo:       "/Steve.png",
+    booksClosed: true,
+    slides: Array.from({ length: 16 }, (_, i) => `/portfolio/steve-${String(i + 1).padStart(2, "0")}.jpg`),
   },
   {
-    name:   "Lorem Ipsum Artist",
-    status: "Accepting New Clients",
-    eyebrow: "Ink Kings",
-    bio:    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    photo:  "/PHimage.png",
+    name:        "Hunter Hulley",
+    status:      "Accepting New Clients",
+    bio:         "Specializing in geometric and illustrative black and gray tattoos — mandalas, flowers, animals, portraits, and more. 5 years at Ink Kings. Fine Arts graduate, University of Wisconsin La-Crosse.",
+    photo:       "/Hunter.png",
+    booksClosed: false,
+    slides: Array.from({ length: 10 }, (_, i) => `/portfolio/hunter/hunter-${String(i + 1).padStart(2, "0")}.jpg`),
   },
   {
-    name:   "Dolor Sit Amet",
-    status: "Limited Availability",
-    eyebrow: "Ink Kings",
-    bio:    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    photo:  "/PHimage.png",
+    name:        "Austin Jackels",
+    status:      "Accepting New Clients",
+    bio:         "Realism specialist with a passion for color pieces. Apprenticed under Steve De Los Reyes in 2018, working with traditional coil machines and focused on color blending, saturation, and technique.",
+    photo:       "/PHimage.png",
+    booksClosed: false,
+    slides: Array.from({ length: 9 }, (_, i) => `/portfolio/austin/austin-${String(i + 1).padStart(2, "0")}.jpg`),
+  },
+  {
+    name:        "Nick Gagnon",
+    status:      "Accepting New Clients",
+    bio:         "Black and grey realism specialist. Tattooing since 2011, with experience across Minnesota and the Carolinas. Known for surrealism, dark art, horror, wildlife, portraiture, and geometric blackwork.",
+    photo:       "/PHimage.png",
+    booksClosed: false,
+    slides: Array.from({ length: 9 }, (_, i) => `/portfolio/nick/nick-${String(i + 1).padStart(2, "0")}.jpg`),
+  },
+  {
+    name:        "John Carpenter",
+    status:      "Accepting New Clients",
+    bio:         "Specializing in black and grey realism and color realism. Looking forward to working with clients on creative, challenging pieces.",
+    photo:       "/PHimage.png",
+    booksClosed: false,
+    slides: Array.from({ length: 9 }, (_, i) => `/portfolio/john/john-${String(i + 1).padStart(2, "0")}.jpg`),
   },
 ];
 
@@ -423,21 +451,131 @@ function ProfileBlock({
   profile,
   opacity,
   photoOpacity,
+  onPortfolio,
 }: {
   profile: Profile;
   opacity: number;
   photoOpacity: number;
+  onPortfolio: () => void;
 }) {
   return (
     <>
+      <style>{`
+        .gold-btn {
+          outline: 0;
+          border: 0;
+          background-color: transparent;
+          position: relative;
+          cursor: pointer;
+          font-size: clamp(14px, 2.5vw, 20px);
+          overflow: hidden;
+        }
+        .gold-btn span {
+          position: relative;
+          z-index: 2;
+          display: block;
+          font-weight: bold;
+          padding: 0.5em 1.4em;
+          letter-spacing: 0.15em;
+          font-family: "trajan-pro-3", serif;
+          background: linear-gradient(295deg, #ffe5a2 5%, #bf841a 50%, #ffcd74 95%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          transition: background 0.5s ease;
+        }
+        .gold-btn:before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: conic-gradient(
+            transparent 0deg,
+            rgba(143, 168, 255, 0.2) 100deg,
+            transparent 150deg,
+            transparent 230deg,
+            rgba(191, 122, 0, 0.75) 250deg,
+            rgba(242, 187, 90, 0.9) 280deg,
+            #ffe195 280deg,
+            rgba(242, 187, 90, 0.9) 300deg,
+            rgba(191, 122, 0, 0.75) 310deg,
+            transparent 360deg
+          );
+          transform: scaleX(4) scaleY(2) rotate(0deg);
+          transition: 0.5s transform;
+        }
+        .gold-btn:hover:before {
+          transform: scaleX(4) scaleY(2) rotate(-360deg);
+        }
+        .gold-btn:after {
+          content: "";
+          position: absolute;
+          inset: 0.05em;
+          background-color: #000;
+        }
+        .gold-btn span:before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-image: linear-gradient(
+            295deg,
+            #ffe195 0%,
+            rgba(242, 187, 90, 0.8) 15%,
+            rgba(191, 122, 0, 0.75) 30%,
+            transparent 95%
+          );
+          opacity: 0;
+          transition: opacity 0.5s ease;
+        }
+        .gold-btn:hover span:before {
+          opacity: 1;
+        }
+        .gold-btn:hover span {
+          background: #fff;
+          -webkit-background-clip: text;
+          background-clip: text;
+        }
+        .maroon-btn {
+          outline: 0;
+          border: 0;
+          background: transparent;
+          position: relative;
+          cursor: default;
+          font-size: clamp(14px, 2.5vw, 20px);
+          overflow: hidden;
+        }
+        .maroon-btn span {
+          position: relative;
+          z-index: 2;
+          display: block;
+          font-weight: bold;
+          padding: 0.5em 1.4em;
+          letter-spacing: 0.15em;
+          font-family: "trajan-pro-3", serif;
+          color: #8b2942;
+        }
+        .maroon-btn:before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border: 1px solid rgba(139, 41, 66, 0.6);
+          border-radius: 0;
+          box-sizing: border-box;
+        }
+        .maroon-btn:after {
+          content: "";
+          position: absolute;
+          inset: 0.05em;
+          background-color: #000;
+        }
+      `}</style>
+
       {/* Circle portrait — top center, fills crown interior */}
       <div
-        className="absolute left-1/2 z-20 -translate-x-1/2"
+        className="absolute left-1/2 z-20 -translate-x-1/2 top-[5%] md:top-[1%]"
         style={{
-          top: "5%",
           opacity: photoOpacity,
-          width: "clamp(320px, 80vw, 600px)",
-          height: "clamp(320px, 80vw, 600px)",
+          width: "clamp(320px, 80vw, 480px)",
+          height: "clamp(320px, 80vw, 480px)",
           borderRadius: "50%",
           overflow: "hidden",
           maskImage: "radial-gradient(circle, black 50%, transparent 78%)",
@@ -465,17 +603,151 @@ function ProfileBlock({
         <p className="font-body mx-auto max-w-xl text-base font-light leading-relaxed text-neutral-300 md:text-xl">
           {profile.bio}
         </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          {profile.booksClosed ? (
+            <>
+              <button className="maroon-btn" type="button" aria-label="Books closed">
+                <span>BOOKS CLOSED</span>
+              </button>
+              <button className="gold-btn" type="button" onClick={onPortfolio}>
+                <span>PORTFOLIO</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="gold-btn" type="button">
+                <span>BOOK A SESSION</span>
+              </button>
+              <button className="gold-btn" type="button" onClick={onPortfolio}>
+                <span>PORTFOLIO</span>
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </>
   );
 }
 
 // ─── hero root ────────────────────────────────────────────────────────────────
+// ─── portfolio panel (in-page overlay) ───────────────────────────────────────
+type ProfileType = (typeof profiles)[number];
+
+function PortfolioPanel({ profile, onClose }: { profile: ProfileType; onClose: () => void }) {
+  const slides = profile.slides.map((src) => ({ image: src, alt: `Tattoo by ${profile.name}` }));
+
+  // Lock body scroll while panel is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  // Close on Escape key
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 200,
+        background: "rgba(0,0,0,0.92)",
+        overflowY: "auto",
+        animation: "panelSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) forwards",
+      }}
+    >
+      <style>{`
+        @keyframes panelSlideUp {
+          from { transform: translateY(100%); }
+          to   { transform: translateY(0); }
+        }
+      `}</style>
+
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        aria-label="Close portfolio"
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 10,
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          background: "rgba(0,0,0,0.85)",
+          border: "none",
+          color: "rgba(255,255,255,0.6)",
+          fontSize: "0.75rem",
+          letterSpacing: "0.2em",
+          textTransform: "uppercase",
+          fontFamily: '"trajan-pro-3", serif',
+          padding: "1rem 1.5rem",
+          cursor: "pointer",
+          width: "100%",
+          textAlign: "left",
+          backdropFilter: "blur(8px)",
+        }}
+      >
+        ← Close
+      </button>
+
+      {/* Artist header */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "2rem 1.5rem 2.5rem", maxWidth: 700, margin: "0 auto" }}>
+        <div style={{ width: "clamp(160px,30vw,220px)", height: "clamp(160px,30vw,220px)", borderRadius: "50%", overflow: "hidden", marginBottom: "1.5rem", maskImage: "radial-gradient(circle, black 55%, transparent 80%)", WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 80%)" }}>
+          <img src={profile.photo} alt={profile.name} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top", display: "block" }} />
+        </div>
+        <h2 style={{ fontSize: "clamp(1.5rem,4vw,2.5rem)", fontWeight: 600, letterSpacing: "0.05em", margin: "0 0 0.4rem", color: "#f5f5f5", fontFamily: '"trajan-pro-3", serif' }}>
+          {profile.name}
+        </h2>
+        <p style={{ fontSize: "0.7rem", fontWeight: 300, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", margin: "0 0 1.2rem", fontFamily: '"trajan-pro-3", serif' }}>
+          {profile.status}
+        </p>
+        <p style={{ fontFamily: '"myriad-pro","Helvetica Neue",Arial,sans-serif', fontWeight: 300, fontSize: "clamp(0.85rem,1.8vw,1rem)", lineHeight: 1.8, color: "rgba(255,255,255,0.6)", maxWidth: 580 }}>
+          {profile.bio}
+        </p>
+      </div>
+
+      {/* Slideshow */}
+      <div style={{ paddingBottom: "5rem" }}>
+        <p style={{ textAlign: "center", fontSize: "0.65rem", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: "2rem", fontFamily: '"trajan-pro-3", serif' }}>
+          Portfolio
+        </p>
+        <PortfolioSlideshow slides={slides} />
+      </div>
+    </div>
+  );
+}
+
+const SCROLL_KEY = "ik_scroll_return";
+
 export default function CrownSplitHero() {
   const scrollYRef = useRef(0);
-  const [textAnimDone, setTextAnimDone] = useState(false);
-  const [introDone, setIntroDone] = useState(false);
+
+  // If returning from a portfolio page, skip the intro entirely
+  const isReturn = typeof window !== "undefined" &&
+    sessionStorage.getItem(SCROLL_KEY) !== null;
+
+  const [textAnimDone, setTextAnimDone] = useState(isReturn);
+  const [introDone, setIntroDone] = useState(isReturn);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [portfolioOpen, setPortfolioOpen] = useState<number | null>(null);
+
+  // On mount: restore saved scroll position if returning from portfolio
+  useEffect(() => {
+    const saved = sessionStorage.getItem(SCROLL_KEY);
+    if (saved !== null) {
+      const y = parseInt(saved, 10);
+      sessionStorage.removeItem(SCROLL_KEY);
+      // Use rAF to let the page layout settle before scrolling
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: y, behavior: "instant" });
+      });
+    }
+  }, []);
 
   // Lock scroll while the crown zooms in
   useEffect(() => {
@@ -504,7 +776,7 @@ export default function CrownSplitHero() {
     clamp(1 - (scrollProgress - 1.9) / 0.2, 0, 1);
 
   return (
-    <section className="relative w-full" style={{ height: "600vh" }}>
+    <section className="relative w-full" style={{ height: "800vh" }}>
       <div className="sticky top-0 h-screen overflow-hidden">
         <LiquidBackground className="z-0" interactive={false} zoom={2.5} />
 
@@ -695,9 +967,18 @@ export default function CrownSplitHero() {
               profile={profile}
               opacity={textOp}
               photoOpacity={photoOp}
+              onPortfolio={() => setPortfolioOpen(i)}
             />
           );
         })}
+
+        {/* In-page portfolio panel */}
+        {portfolioOpen !== null && (
+          <PortfolioPanel
+            profile={profiles[portfolioOpen]}
+            onClose={() => setPortfolioOpen(null)}
+          />
+        )}
       </div>
     </section>
   );
