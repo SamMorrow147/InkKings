@@ -519,11 +519,34 @@ function ProfileBlock({
 
 // ─── hero root ────────────────────────────────────────────────────────────────
 
+const SCROLL_KEY = "ik_scroll_pos";
+
 export default function CrownSplitHero() {
   const scrollYRef = useRef(0);
   const [textAnimDone, setTextAnimDone] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  // On mount: restore saved scroll position and skip intro
+  useEffect(() => {
+    const saved = sessionStorage.getItem(SCROLL_KEY);
+    if (saved !== null) {
+      const y = parseInt(saved, 10);
+      sessionStorage.removeItem(SCROLL_KEY);
+      setTextAnimDone(true);
+      setIntroDone(true);
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: y, behavior: "instant" as ScrollBehavior });
+      });
+    }
+  }, []);
+
+  // Continuously save scroll position so portfolio pages can restore it
+  useEffect(() => {
+    const save = () => sessionStorage.setItem(SCROLL_KEY, String(window.scrollY));
+    window.addEventListener("scroll", save, { passive: true });
+    return () => window.removeEventListener("scroll", save);
+  }, []);
 
   // Lock scroll while the crown zooms in
   useEffect(() => {
