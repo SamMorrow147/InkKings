@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
+import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
 import {
   Box3,
   DoubleSide,
@@ -10,6 +11,7 @@ import {
   MathUtils,
   Mesh,
   MeshStandardMaterial,
+  TextureLoader,
   Vector3,
 } from "three";
 import LiquidBackground from "./LiquidBackground";
@@ -18,34 +20,52 @@ import LiquidBackground from "./LiquidBackground";
 const clamp = (v: number, lo: number, hi: number) =>
   Math.min(Math.max(v, lo), hi);
 
-// ─── 3-D crown mesh ───────────────────────────────────────────────────────────
+// ─── 3-D crown mesh (Vectary export with MTL + textures) ─────────────────────
+const MODEL_DIR = "/models/gold_crown_1-4";
+
 function CrownMesh() {
-  const rawObject = useLoader(OBJLoader, "/models/crown.obj");
+  const materials = useLoader(
+    MTLLoader,
+    `${MODEL_DIR}/gold_crown_1.mtl`,
+    (loader) => { loader.setResourcePath(`${MODEL_DIR}/`); },
+  );
+
+  const rawObject = useLoader(
+    OBJLoader,
+    `${MODEL_DIR}/gold_crown_1.obj`,
+    (loader) => { materials.preload(); loader.setMaterials(materials); },
+  );
+
+  const normalMap    = useLoader(TextureLoader, `${MODEL_DIR}/wood_Wood_006_NormalMap.jpg`);
+  const roughnessMap = useLoader(TextureLoader, `${MODEL_DIR}/_&wood_Wood_006_Roughness_3.jpg`);
 
   const centeredObject = useMemo(() => {
     const object = rawObject.clone();
 
-    // Rich polished gold — deep warm base, high metalness, low roughness
-    const mat = new MeshStandardMaterial({
-      color:     "#B8860B",   // dark goldenrod base
-      emissive:  "#3A2800",   // warm shadow fill so dark areas aren't dead black
-      metalness: 0.92,
-      roughness: 0.22,
-      side:      DoubleSide,
-    });
     object.traverse((child) => {
-      if ((child as Mesh).isMesh) (child as Mesh).material = mat;
+      if (!(child as Mesh).isMesh) return;
+      const mesh   = child as Mesh;
+      const oldMat = mesh.material as MeshStandardMaterial;
+
+      mesh.material = new MeshStandardMaterial({
+        map:          oldMat.map,
+        normalMap,
+        roughnessMap,
+        metalness:    0.85,
+        roughness:    0.4,
+        side:         DoubleSide,
+      });
     });
 
-    const box    = new Box3().setFromObject(object);
-    const center = box.getCenter(new Vector3());
-    const size   = box.getSize(new Vector3());
+    const box     = new Box3().setFromObject(object);
+    const center  = box.getCenter(new Vector3());
+    const size    = box.getSize(new Vector3());
     const maxAxis = Math.max(size.x, size.y, size.z);
-    const scale  = maxAxis > 0 ? 1 / maxAxis : 1;
+    const scale   = maxAxis > 0 ? 1 / maxAxis : 1;
     object.scale.setScalar(scale);
     object.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
     return object;
-  }, [rawObject]);
+  }, [rawObject, normalMap, roughnessMap]);
 
   return <primitive object={centeredObject} />;
 }
@@ -456,7 +476,7 @@ export default function CrownSplitHero() {
               <div
                 className="absolute left-0 top-0 z-[15] hidden h-full w-[45%] max-w-[600px] md:block"
                 style={{
-                  opacity: op * 0.65,
+                  opacity: op * 0.85,
                   maskImage: "linear-gradient(to right, black 0%, black 50%, transparent 100%)",
                   WebkitMaskImage: "linear-gradient(to right, black 0%, black 50%, transparent 100%)",
                 }}
@@ -468,13 +488,13 @@ export default function CrownSplitHero() {
                 />
               </div>
 
-              {/* Mobile: top, full width, behind crown */}
+              {/* Mobile: top half, full width, behind crown */}
               <div
-                className="absolute left-0 right-0 top-0 z-[5] h-[55%] md:hidden"
+                className="absolute left-0 right-0 top-0 z-[5] h-[50%] md:hidden"
                 style={{
-                  opacity: op * 0.65,
-                  maskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
-                  WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 60%, transparent 100%)",
+                  opacity: op * 0.85,
+                  maskImage: "linear-gradient(to bottom, black 0%, black 65%, transparent 100%)",
+                  WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 65%, transparent 100%)",
                 }}
               >
                 <img
@@ -544,9 +564,11 @@ export default function CrownSplitHero() {
             gl={{ alpha: true, antialias: true }}
             style={{ background: "transparent", width: "100%", height: "100%" }}
           >
-            <ambientLight intensity={0.9} />
-            <directionalLight position={[3, 4, 5]} intensity={1.3} />
-            <pointLight position={[0, 2, 3]} intensity={1.5} color="#ffe4a0" />
+            <ambientLight intensity={1.6} />
+            <directionalLight position={[3, 4, 5]} intensity={2.5} />
+            <directionalLight position={[-4, 3, -2]} intensity={1.2} color="#ffe8b0" />
+            <pointLight position={[0, 2, 3]} intensity={3.0} color="#ffe4a0" />
+            <pointLight position={[0, -3, 2]} intensity={1.2} color="#fff0c0" />
             <CrownScene scrollYRef={scrollYRef} onIntroDone={() => setIntroDone(true)} />
           </Canvas>
         </div>
@@ -568,13 +590,13 @@ export default function CrownSplitHero() {
               className="absolute bottom-0 left-0 z-20 w-full px-6 pb-8 text-white md:hidden"
               style={{ opacity: op, pointerEvents: op > 0.5 ? "auto" : "none" }}
             >
-              <p className="mb-2 text-sm font-light uppercase tracking-[0.28em] text-neutral-300">
+              <p className="mb-2 text-base font-light uppercase tracking-[0.28em] text-neutral-300">
                 Ink Kings
               </p>
-              <h1 className="mb-3 text-4xl font-semibold leading-tight">
+              <h1 className="mb-3 text-5xl font-semibold leading-tight">
                 Custom Tattooing
               </h1>
-              <p className="font-body text-sm font-light leading-relaxed text-neutral-300">
+              <p className="font-body text-base font-light leading-relaxed text-neutral-300">
                 Large-scale realism, detailed portraits, and wildlife pieces designed and executed in-house.
               </p>
             </div>
@@ -592,7 +614,7 @@ export default function CrownSplitHero() {
           <img
             src="/award+white.png"
             alt="Best Tattoo Parlor Award"
-            className="mb-3 w-48 object-contain drop-shadow-lg"
+            className="mb-3 w-36 object-contain drop-shadow-lg"
           />
           <p className="mb-2 text-sm font-light uppercase tracking-[0.28em] text-neutral-300">
             Recognition
