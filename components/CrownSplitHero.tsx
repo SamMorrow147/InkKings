@@ -21,7 +21,7 @@ const clamp = (v: number, lo: number, hi: number) =>
   Math.min(Math.max(v, lo), hi);
 
 // ─── 3-D crown mesh (Vectary export with MTL + textures) ─────────────────────
-const MODEL_DIR = "/models/gold_crown_1-4";
+const MODEL_DIR = "/models/gold_crown_1-6";
 
 function CrownMesh() {
   const materials = useLoader(
