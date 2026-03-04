@@ -19,10 +19,118 @@ body {
   font-family: "myriad-pro", "Helvetica Neue", Arial, sans-serif;
 }
 
-/* ── Portfolio Panel animation ───────────────────────────────────────────── */
-@keyframes panelSlideUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+/* ── Gold / Maroon buttons ───────────────────────────────────────────────── */
+.gold-btn {
+  outline: 0;
+  border: 0;
+  background-color: transparent;
+  position: relative;
+  cursor: pointer;
+  font-size: clamp(14px, 2.5vw, 20px);
+  overflow: hidden;
+}
+.gold-btn span {
+  position: relative;
+  z-index: 2;
+  display: block;
+  font-weight: bold;
+  padding: 0.5em 1.4em;
+  letter-spacing: 0.15em;
+  font-family: "trajan-pro-3", serif;
+  background: linear-gradient(295deg, #ffe5a2 5%, #bf841a 50%, #ffcd74 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: background 0.5s ease;
+}
+.gold-btn:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: conic-gradient(
+    transparent 0deg,
+    rgba(143, 168, 255, 0.2) 100deg,
+    transparent 150deg,
+    transparent 230deg,
+    rgba(191, 122, 0, 0.75) 250deg,
+    rgba(242, 187, 90, 0.9) 280deg,
+    #ffe195 280deg,
+    rgba(242, 187, 90, 0.9) 300deg,
+    rgba(191, 122, 0, 0.75) 310deg,
+    transparent 360deg
+  );
+  transform: scaleX(4) scaleY(2) rotate(0deg);
+  transition: 0.5s transform;
+}
+.gold-btn:hover:before {
+  transform: scaleX(4) scaleY(2) rotate(-360deg);
+}
+.gold-btn:after {
+  content: "";
+  position: absolute;
+  inset: 0.05em;
+  background-color: #000;
+  pointer-events: none;
+}
+.gold-btn span:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+    295deg,
+    #ffe195 0%,
+    rgba(242, 187, 90, 0.8) 15%,
+    rgba(191, 122, 0, 0.75) 30%,
+    transparent 95%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.gold-btn:hover span:before {
+  opacity: 1;
+}
+.gold-btn:hover span {
+  background: #fff;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.maroon-btn {
+  outline: 0;
+  border: 0;
+  background: transparent;
+  position: relative;
+  cursor: default;
+  font-size: clamp(14px, 2.5vw, 20px);
+  overflow: hidden;
+}
+.maroon-btn span {
+  position: relative;
+  z-index: 2;
+  display: block;
+  font-weight: bold;
+  padding: 0.5em 1.4em;
+  letter-spacing: 0.15em;
+  font-family: "trajan-pro-3", serif;
+  color: #8b2942;
+}
+.maroon-btn:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(139, 41, 66, 0.6);
+  border-radius: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.maroon-btn:after {
+  content: "";
+  position: absolute;
+  inset: 0.05em;
+  background-color: #000;
+  pointer-events: none;
 }
 
 /* ── Portfolio Slideshow ─────────────────────────────────────────────────── */
