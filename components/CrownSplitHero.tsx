@@ -334,7 +334,7 @@ function SectionsText() {
       {desktopBlock(
         opacity2,
         "Ink Kings",
-        "Custom Tattooing",
+        "Custom Tattoos",
         "Large-scale realism, detailed portraits, and wildlife pieces designed and executed in-house."
       )}
 
@@ -594,7 +594,7 @@ export default function CrownSplitHero() {
                 Ink Kings
               </p>
               <h1 className="mb-3 text-5xl font-semibold leading-tight">
-                Custom Tattooing
+                Custom Tattoos
               </h1>
               <p className="font-body text-base font-light leading-relaxed text-neutral-300">
                 Large-scale realism, detailed portraits, and wildlife pieces designed and executed in-house.
