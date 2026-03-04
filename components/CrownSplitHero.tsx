@@ -88,28 +88,51 @@ const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 function CrownScene({
   scrollYRef,
   onIntroDone,
+  startZoom,
 }: {
   scrollYRef: React.MutableRefObject<number>;
   onIntroDone: () => void;
+  startZoom: boolean;
 }) {
   const { viewport, size } = useThree();
   const groupRef = useRef<Group>(null);
 
   const introStartTimeRef = useRef<number | null>(null);
   const introDoneRef = useRef(false);
+  const meshReadyRef = useRef(false);
   const onIntroDoneRef = useRef(onIntroDone);
   onIntroDoneRef.current = onIntroDone;
 
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
 
-    // Record time on the very first frame
+    // Wait until the OBJ mesh has actually loaded
+    if (!meshReadyRef.current) {
+      let hasMesh = false;
+      groupRef.current.traverse((child) => {
+        if ((child as any).isMesh) hasMesh = true;
+      });
+      if (!hasMesh) {
+        groupRef.current.visible = false;
+        return;
+      }
+      meshReadyRef.current = true;
+    }
+
+    // Stay hidden until text animation is done and we're told to start
+    if (!startZoom) {
+      groupRef.current.visible = false;
+      return;
+    }
+    groupRef.current.visible = true;
+
+    // Start intro timer only once we're allowed to zoom
     if (introStartTimeRef.current === null) {
       introStartTimeRef.current = clock.getElapsedTime();
     }
 
     // ── intro zoom (3× → 1× over 1.5s with ease-out) ───────────────────
-    const INTRO_DURATION = 1.5; // seconds
+    const INTRO_DURATION = 1.5;
     const elapsed = clock.getElapsedTime() - introStartTimeRef.current;
     const rawT = clamp(elapsed / INTRO_DURATION, 0, 1);
     const easedT = easeOutCubic(rawT);
@@ -159,12 +182,16 @@ function CrownScene({
       groupRef.current.position.y, targetY, 0.06,
     );
 
-    // ── rotation ──────────────────────────────────────────────────────────
-    groupRef.current.rotation.y = MathUtils.lerp(
-      groupRef.current.rotation.y,
-      scrollYRef.current * 0.003,
-      0.08,
-    );
+    // ── rotation (frozen during intro zoom) ────────────────────────────────
+    if (rawT >= 1) {
+      groupRef.current.rotation.y = MathUtils.lerp(
+        groupRef.current.rotation.y,
+        scrollYRef.current * 0.003,
+        0.08,
+      );
+    } else {
+      groupRef.current.rotation.y = 0;
+    }
 
     const tiltTarget =
       progress < 1.0
@@ -173,11 +200,15 @@ function CrownScene({
           ? (-Math.PI / 2) * centerState
           : 0;
 
-    groupRef.current.rotation.x = MathUtils.lerp(
-      groupRef.current.rotation.x,
-      tiltTarget,
-      0.06,
-    );
+    if (rawT >= 1) {
+      groupRef.current.rotation.x = MathUtils.lerp(
+        groupRef.current.rotation.x,
+        tiltTarget,
+        0.06,
+      );
+    } else {
+      groupRef.current.rotation.x = (Math.PI / 2);
+    }
 
     groupRef.current.rotation.z = MathUtils.lerp(
       groupRef.current.rotation.z, 0, 0.08,
@@ -194,8 +225,9 @@ function CrownScene({
 }
 
 // ─── §1 text — SVG with stroke-draw + fill animation, fades on scroll ───────
-function Section1Text() {
+function Section1Text({ onAnimDone }: { onAnimDone: () => void }) {
   const [progress, setProgress] = useState(0);
+  const firedRef = useRef(false);
 
   useEffect(() => {
     const onScroll = () => setProgress(window.scrollY / window.innerHeight);
@@ -203,6 +235,16 @@ function Section1Text() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Fire once after the last text animation finishes (TATTOO fill: 1500ms delay + 400ms duration = 1900ms)
+  useEffect(() => {
+    if (firedRef.current) return;
+    const timer = setTimeout(() => {
+      firedRef.current = true;
+      onAnimDone();
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [onAnimDone]);
 
   const opacity = clamp(1 - (progress - 0.5) / 0.2, 0, 1);
 
@@ -341,7 +383,7 @@ function SectionsText() {
       {desktopBlock(
         opacity3,
         "Recognition",
-        "Best Tattoo Parlor",
+        "Best Parlor",
         "Voted Best Tattoo Parlor in 2020, 2021, and 2022 by Sun Media Readers."
       )}
 
@@ -431,6 +473,7 @@ function ProfileBlock({
 // ─── hero root ────────────────────────────────────────────────────────────────
 export default function CrownSplitHero() {
   const scrollYRef = useRef(0);
+  const [textAnimDone, setTextAnimDone] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
@@ -569,11 +612,11 @@ export default function CrownSplitHero() {
             <directionalLight position={[-4, 3, -2]} intensity={1.2} color="#ffe8b0" />
             <pointLight position={[0, 2, 3]} intensity={3.0} color="#ffe4a0" />
             <pointLight position={[0, -3, 2]} intensity={1.2} color="#fff0c0" />
-            <CrownScene scrollYRef={scrollYRef} onIntroDone={() => setIntroDone(true)} />
+            <CrownScene scrollYRef={scrollYRef} onIntroDone={() => setIntroDone(true)} startZoom={textAnimDone} />
           </Canvas>
         </div>
 
-        <Section1Text />
+        <Section1Text onAnimDone={() => setTextAnimDone(true)} />
 
         {/* §2/3/4 desktop + §2/4 mobile — vertically centred */}
         <div className="absolute left-0 top-1/2 z-20 flex w-full -translate-y-1/2 items-center px-6 text-white md:left-auto md:right-0 md:top-0 md:h-full md:w-1/2 md:translate-y-0 md:px-0">
@@ -619,8 +662,8 @@ export default function CrownSplitHero() {
           <p className="mb-2 text-sm font-light uppercase tracking-[0.28em] text-neutral-300">
             Recognition
           </p>
-          <h1 className="mb-3 text-4xl font-semibold leading-tight">
-            Best Tattoo Parlor
+          <h1 className="mb-3 text-5xl font-semibold leading-tight">
+            Best Parlor
           </h1>
           <p className="font-body text-sm font-light leading-relaxed text-neutral-300">
             Voted Best Tattoo Parlor in 2020, 2021, and 2022 by Sun Media Readers.
