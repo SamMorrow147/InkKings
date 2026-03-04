@@ -488,6 +488,7 @@ function ProfileBlock({
           content: "";
           position: absolute;
           inset: 0;
+          pointer-events: none;
           background: conic-gradient(
             transparent 0deg,
             rgba(143, 168, 255, 0.2) 100deg,
@@ -511,11 +512,13 @@ function ProfileBlock({
           position: absolute;
           inset: 0.05em;
           background-color: #000;
+          pointer-events: none;
         }
         .gold-btn span:before {
           content: "";
           position: absolute;
           inset: 0;
+          pointer-events: none;
           background-image: linear-gradient(
             295deg,
             #ffe195 0%,
@@ -560,12 +563,14 @@ function ProfileBlock({
           border: 1px solid rgba(139, 41, 66, 0.6);
           border-radius: 0;
           box-sizing: border-box;
+          pointer-events: none;
         }
         .maroon-btn:after {
           content: "";
           position: absolute;
           inset: 0.05em;
           background-color: #000;
+          pointer-events: none;
         }
       `}</style>
 
@@ -733,23 +738,19 @@ const SCROLL_KEY = "ik_scroll_return";
 
 export default function CrownSplitHero() {
   const scrollYRef = useRef(0);
-
-  // If returning from a portfolio page, skip the intro entirely
-  const isReturn = typeof window !== "undefined" &&
-    sessionStorage.getItem(SCROLL_KEY) !== null;
-
-  const [textAnimDone, setTextAnimDone] = useState(isReturn);
-  const [introDone, setIntroDone] = useState(isReturn);
+  const [textAnimDone, setTextAnimDone] = useState(false);
+  const [introDone, setIntroDone] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [portfolioOpen, setPortfolioOpen] = useState<number | null>(null);
 
-  // On mount: restore saved scroll position if returning from portfolio
+  // On mount: if returning from a portfolio page, skip intro and restore scroll
   useEffect(() => {
     const saved = sessionStorage.getItem(SCROLL_KEY);
     if (saved !== null) {
       const y = parseInt(saved, 10);
       sessionStorage.removeItem(SCROLL_KEY);
-      // Use rAF to let the page layout settle before scrolling
+      setTextAnimDone(true);
+      setIntroDone(true);
       requestAnimationFrame(() => {
         window.scrollTo({ top: y, behavior: "instant" });
       });
