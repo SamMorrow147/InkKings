@@ -26,9 +26,7 @@ export default function PortfolioSlideshow({ slides }: PortfolioSlideshowProps) 
   const animFrameRef = useRef<number | null>(null);
   const lastScrollRef = useRef(0);
   const isDraggingRef = useRef(false);
-  const isHorizontalRef = useRef<boolean | null>(null); // null = undecided
   const dragStartXRef = useRef(0);
-  const dragStartYRef = useRef(0);
   const scrollStartRef = useRef(0);
 
   const extendedSlides = [...slides, ...slides, ...slides, ...slides, ...slides];
@@ -116,9 +114,7 @@ export default function PortfolioSlideshow({ slides }: PortfolioSlideshowProps) 
     if (!c) return;
     gsap.killTweensOf(c);
     isDraggingRef.current = true;
-    isHorizontalRef.current = null; // reset direction lock
     dragStartXRef.current = e.clientX;
-    dragStartYRef.current = e.clientY;
     scrollStartRef.current = c.scrollLeft;
     c.setPointerCapture(e.pointerId);
   };
@@ -126,18 +122,6 @@ export default function PortfolioSlideshow({ slides }: PortfolioSlideshowProps) 
     if (!isDraggingRef.current) return;
     const c = scrollContainerRef.current;
     if (!c) return;
-
-    const dx = Math.abs(e.clientX - dragStartXRef.current);
-    const dy = Math.abs(e.clientY - dragStartYRef.current);
-
-    // Determine gesture direction once we have enough movement
-    if (isHorizontalRef.current === null && (dx > 4 || dy > 4)) {
-      isHorizontalRef.current = dx >= dy;
-    }
-
-    // If vertical gesture (or undecided), let the panel scroll naturally
-    if (!isHorizontalRef.current) return;
-
     e.preventDefault();
     c.style.cursor = 'grabbing';
     c.scrollLeft = scrollStartRef.current + (dragStartXRef.current - e.clientX) * 2;
@@ -146,7 +130,6 @@ export default function PortfolioSlideshow({ slides }: PortfolioSlideshowProps) 
     const c = scrollContainerRef.current;
     if (!c) return;
     isDraggingRef.current = false;
-    isHorizontalRef.current = null;
     c.style.cursor = 'grab';
     c.releasePointerCapture(e.pointerId);
   };
@@ -199,7 +182,7 @@ export default function PortfolioSlideshow({ slides }: PortfolioSlideshowProps) 
           padding: `0 calc(50vw - ${SLIDE_W / 2}px)`,
           scrollbarWidth: 'none',
           WebkitOverflowScrolling: 'touch',
-          touchAction: 'pan-y',
+          touchAction: 'pan-x pinch-zoom',
           overscrollBehaviorX: 'contain',
           cursor: 'grab',
           opacity: 0,
