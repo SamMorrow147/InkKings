@@ -650,22 +650,28 @@ function PortfolioPanel({ profile, onClose }: { profile: ProfileType; onClose: (
   }, [onClose]);
 
   return (
+    // Outer: fixed full-screen, handles the slide-up animation only (no overflow here — Safari breaks if you mix transform + overflow-y)
     <div
       style={{
         position: "fixed",
         inset: 0,
         zIndex: 200,
-        background: "rgba(0,0,0,0.92)",
-        overflowY: "auto",
         animation: "panelSlideUp 0.45s cubic-bezier(0.22,1,0.36,1) forwards",
+        pointerEvents: "none",
       }}
     >
-      <style>{`
-        @keyframes panelSlideUp {
-          from { transform: translateY(100%); }
-          to   { transform: translateY(0); }
-        }
-      `}</style>
+      {/* Inner: scrollable container — no transform on this element (Safari requirement) */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(0,0,0,0.95)",
+          overflowY: "scroll",
+          WebkitOverflowScrolling: "touch" as React.CSSProperties["WebkitOverflowScrolling"],
+          overscrollBehavior: "contain",
+          pointerEvents: "auto",
+        }}
+      >
 
       {/* Close button */}
       <button
@@ -718,7 +724,8 @@ function PortfolioPanel({ profile, onClose }: { profile: ProfileType; onClose: (
         </p>
         <PortfolioSlideshow slides={slides} />
       </div>
-    </div>
+      </div> {/* end scrollable inner */}
+    </div>   // end animated outer
   );
 }
 

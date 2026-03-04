@@ -19,6 +19,12 @@ body {
   font-family: "myriad-pro", "Helvetica Neue", Arial, sans-serif;
 }
 
+/* ── Portfolio Panel animation ───────────────────────────────────────────── */
+@keyframes panelSlideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
 /* ── Portfolio Slideshow ─────────────────────────────────────────────────── */
 .portfolio-slideshow {
   position: relative;
