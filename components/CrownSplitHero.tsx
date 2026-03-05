@@ -288,13 +288,15 @@ function Section1Text({ onAnimDone }: { onAnimDone: () => void }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Fire once after the last text animation finishes (TATTOO fill: 1500ms delay + 400ms duration = 1900ms)
+  // Fire only after the type is fully written: TATTOO fill ends at 1500ms + 400ms = 1900ms; add pause before crown
   useEffect(() => {
     if (firedRef.current) return;
+    const typeEndMs = 1900;
+    const pauseBeforeCrownMs = 400;
     const timer = setTimeout(() => {
       firedRef.current = true;
       onAnimDone();
-    }, 2000);
+    }, typeEndMs + pauseBeforeCrownMs);
     return () => clearTimeout(timer);
   }, [onAnimDone]);
 
@@ -864,7 +866,7 @@ export default function CrownSplitHero() {
           );
         })}
 
-        {/* Site credit tag — fades in after scrolling further past Claim Your Crown */}
+        {/* Site credit tag — fades in after scrolling further past START YOUR PIECE */}
         {(() => {
           const op = clamp((scrollProgress - 7.9) / 0.25, 0, 1);
           if (op <= 0) return null;
@@ -932,13 +934,13 @@ export default function CrownSplitHero() {
                 className="mb-4 text-4xl font-semibold leading-tight md:mb-8 md:text-6xl lg:text-7xl"
                 style={{ fontFamily: '"trajan-pro-3", serif', letterSpacing: "0.05em", color: "#f5f5f5" }}
               >
-                Claim Your Crown
+                START YOUR PIECE
               </h2>
               <p
                 className="font-body text-base font-light leading-relaxed text-neutral-300 md:text-xl"
                 style={{ maxWidth: 480, margin: "0 0 1.75rem" }}
               >
-                Permanent art pieces crafted by tattoo royalty. Submit your idea, reference, or rough concept for our artists&apos; consideration.
+                Permanent art crafted by tattoo royalty. Submit your idea, reference, or rough concept for our artists&apos; consideration.
               </p>
               <a href="/request" className="gold-btn">
                 <span>MAKE A REQUEST</span>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import HamburgerMenu from "@/components/HamburgerMenu";
 import "./globals.css";
@@ -72,6 +72,11 @@ export const metadata: Metadata = {
     "msapplication-TileImage": ogImage,
     thumbnail:                 ogImage,
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
