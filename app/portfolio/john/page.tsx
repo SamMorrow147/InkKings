@@ -35,9 +35,6 @@ export default function JohnPortfolioPage() {
         >
           ← Back
         </Link>
-        <span style={{ fontSize: "0.8rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
-          Portfolio
-        </span>
       </div>
 
       <div className="flex flex-col">

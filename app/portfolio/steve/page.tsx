@@ -38,7 +38,6 @@ export default function StevePortfolioPage() {
         fontFamily: '"trajan-pro-3", serif',
       }}
     >
-      {/* Back + Portfolio on one line (hamburger is fixed top-right) */}
       <div className="px-6 py-4 pr-20 flex items-center gap-6">
         <Link
           href="/"
@@ -56,9 +55,6 @@ export default function StevePortfolioPage() {
         >
           ← Back
         </Link>
-        <span style={{ fontSize: "0.8rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
-          Portfolio
-        </span>
       </div>
 
       <div className="flex flex-col">
