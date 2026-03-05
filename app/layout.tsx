@@ -3,7 +3,7 @@ import Script from "next/script";
 import HamburgerMenu from "@/components/HamburgerMenu";
 import "./globals.css";
 
-const GA_ID = "G-7E1B5SEQTR";
+const GA_ID = "G-DTC8ND8FX0";
 
 // Priority order for the site URL:
 //  1. NEXT_PUBLIC_SITE_URL  — set this once your custom domain is live
