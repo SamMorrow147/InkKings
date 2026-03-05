@@ -180,7 +180,7 @@ export default function LocationPage() {
             <Link href="/#artists" className="gold-btn">
               <span>MEET THE TEAM</span>
             </Link>
-            <Link href="/contact" className="gold-btn">
+            <Link href="/request" className="gold-btn">
               <span>REQUEST CUSTOM ART</span>
             </Link>
           </div>

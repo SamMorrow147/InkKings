@@ -436,7 +436,7 @@ function SectionsText() {
           Large-scale realism, detailed portraits, and wildlife pieces designed and executed in-house.
         </p>
         <div style={{ marginTop: "2rem", display: "flex" }}>
-          <a href="/contact" className="gold-btn">
+          <a href="/request" className="gold-btn">
             <span>REQUEST CUSTOM ART</span>
           </a>
         </div>
@@ -567,7 +567,7 @@ function ProfileBlock({
             </>
           ) : (
             <>
-              <a href="/contact" className="gold-btn">
+              <a href="/request" className="gold-btn">
                 <span>BOOK A SESSION</span>
               </a>
               <a href={`/portfolio/${profile.slug}`} className="gold-btn">
@@ -796,7 +796,7 @@ export default function CrownSplitHero() {
                 Large-scale realism, detailed portraits, and wildlife pieces designed and executed in-house.
               </p>
               <div style={{ marginTop: "1.5rem", display: "flex" }}>
-                <a href="/contact" className="gold-btn">
+                <a href="/request" className="gold-btn">
                   <span>REQUEST CUSTOM ART</span>
                 </a>
               </div>
@@ -940,7 +940,7 @@ export default function CrownSplitHero() {
               >
                 Permanent art pieces crafted by tattoo royalty. Submit your idea, reference, or rough concept for our artists&apos; consideration.
               </p>
-              <a href="/contact" className="gold-btn">
+              <a href="/request" className="gold-btn">
                 <span>MAKE A REQUEST</span>
               </a>
 

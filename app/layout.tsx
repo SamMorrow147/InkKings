@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import HamburgerMenu from "@/components/HamburgerMenu";
 import "./globals.css";
+
+const GA_ID = "G-7E1B5SEQTR";
 
 // Priority order for the site URL:
 //  1. NEXT_PUBLIC_SITE_URL  — set this once your custom domain is live
@@ -87,6 +90,18 @@ export default function RootLayout({
         <link rel="image_src" href={ogImage} />
       </head>
       <body>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_ID}');
+          `}
+        </Script>
         <HamburgerMenu>{children}</HamburgerMenu>
       </body>
     </html>

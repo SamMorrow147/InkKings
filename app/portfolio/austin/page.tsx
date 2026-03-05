@@ -112,7 +112,7 @@ export default function AustinPortfolioPage() {
           </p>
 
           <div style={{ marginBottom: "2.5rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
-            <a href="/contact" className="gold-btn">
+            <a href="/request" className="gold-btn">
               <span>BOOK A SESSION</span>
             </a>
             <a
