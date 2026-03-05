@@ -177,9 +177,6 @@ export default function LocationPage() {
               marginTop: "3rem",
             }}
           >
-            <Link href="/#artists" className="gold-btn">
-              <span>MEET THE TEAM</span>
-            </Link>
             <Link href="/request" className="gold-btn">
               <span>REQUEST CUSTOM ART</span>
             </Link>
