@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import HamburgerMenu from "@/components/HamburgerMenu";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://inkKingstattoo.com";
@@ -41,7 +42,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <HamburgerMenu>{children}</HamburgerMenu>
+      </body>
     </html>
   );
 }

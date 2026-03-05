@@ -89,16 +89,18 @@ function CrownScene({
   scrollYRef,
   onIntroDone,
   startZoom,
+  skipIntro,
 }: {
   scrollYRef: React.MutableRefObject<number>;
   onIntroDone: () => void;
   startZoom: boolean;
+  skipIntro: boolean;
 }) {
   const { viewport, size } = useThree();
   const groupRef = useRef<Group>(null);
 
   const introStartTimeRef = useRef<number | null>(null);
-  const introDoneRef = useRef(false);
+  const introDoneRef = useRef(skipIntro); // already done if skipping
   const meshReadyRef = useRef(false);
   const onIntroDoneRef = useRef(onIntroDone);
   onIntroDoneRef.current = onIntroDone;
@@ -126,13 +128,16 @@ function CrownScene({
     }
     groupRef.current.visible = true;
 
-    // Start intro timer only once we're allowed to zoom
+    // Start intro timer only once we're allowed to zoom.
+    // When skipIntro is true, backdate the start so rawT is immediately 1.
+    const INTRO_DURATION = 1.5;
     if (introStartTimeRef.current === null) {
-      introStartTimeRef.current = clock.getElapsedTime();
+      introStartTimeRef.current = skipIntro
+        ? clock.getElapsedTime() - INTRO_DURATION - 0.01
+        : clock.getElapsedTime();
     }
 
     // ── intro zoom (3× → 1× over 1.5s with ease-out) ───────────────────
-    const INTRO_DURATION = 1.5;
     const elapsed = clock.getElapsedTime() - introStartTimeRef.current;
     const rawT = clamp(elapsed / INTRO_DURATION, 0, 1);
     const easedT = easeOutCubic(rawT);
@@ -144,7 +149,7 @@ function CrownScene({
     }
 
     const isMobile = size.width < 768;
-    const progress = scrollYRef.current / window.innerHeight; // 0 → 3
+    const progress = scrollYRef.current / window.innerHeight;
 
     // centerState: 1 = centred+top-down, 0 = left+front-facing
     let centerState: number;
@@ -160,28 +165,48 @@ function CrownScene({
       centerState = 1;
     }
 
-    // ── scale (base × intro zoom multiplier) ──────────────────────────────
-    // On desktop, shrink crown smoothly when entering profile sections (progress 2.0→2.5)
-    // so it frames the circular portrait without overwhelming it. Mobile stays fixed.
+    // New final section thresholds (progress 7 → 9, section is 1000vh)
+    const NEW_SEC_START    = 7.0;
+    const NEW_SEC_TILT_END = 8.5;
+    const isNewSection     = progress >= NEW_SEC_START;
+
+    // ── scale ──────────────────────────────────────────────────────────────
     const baseScale = isMobile ? 2.0 : 5.0;
-    const desktopProfileScale = isMobile
-      ? 1.0
-      : MathUtils.lerp(1.0, 0.45, clamp((progress - 2.0) / 0.5, 0, 1));
-    groupRef.current.scale.setScalar(baseScale * introMultiplier * desktopProfileScale);
+    let profileScale: number;
+    if (isMobile && isNewSection) {
+      const t = clamp(
+        (progress - NEW_SEC_START) / (NEW_SEC_TILT_END - NEW_SEC_START),
+        0, 1,
+      );
+      profileScale = MathUtils.lerp(1.0, 0.72, easeOutCubic(t));
+    } else if (isMobile) {
+      profileScale = 1.0;
+    } else if (isNewSection) {
+      // Grow from artist-section size (0.45) back up toward 0.78 as crown tilts front
+      const t = clamp(
+        (progress - NEW_SEC_START) / (NEW_SEC_TILT_END - NEW_SEC_START),
+        0, 1,
+      );
+      profileScale = MathUtils.lerp(0.45, 0.78, easeOutCubic(t));
+    } else {
+      profileScale = MathUtils.lerp(1.0, 0.45, clamp((progress - 2.0) / 0.5, 0, 1));
+    }
+    groupRef.current.scale.setScalar(baseScale * introMultiplier * profileScale);
 
     // ── position ──────────────────────────────────────────────────────────
     const baseX = isMobile ? -viewport.width * 0.4 : -viewport.width * 0.5;
-
     const targetX = baseX * (1 - centerState);
 
-    // Profile sections: mobile lifts up, desktop nudges down slightly
+    // Artist sections lift the crown up; new section eases it back to centre
     const section4State = clamp((progress - 2.0) / 0.5, 0, 1);
-    const section4Lift = section4State * (
-      isMobile
-        ?  viewport.height * 0.22
-        : viewport.height * 0.18
+    const artistLift = section4State * (
+      isMobile ? viewport.height * 0.22 : viewport.height * 0.18
     );
-    const targetY = section4Lift;
+    const newSecDropT = clamp((progress - NEW_SEC_START) / 1.0, 0, 1);
+    const newSecRestY = isMobile ? viewport.height * 0.18 : viewport.height * 0.14;
+    const targetY = isNewSection
+      ? MathUtils.lerp(artistLift, newSecRestY, easeOutCubic(newSecDropT))
+      : artistLift;
 
     groupRef.current.position.x = MathUtils.lerp(
       groupRef.current.position.x, targetX, 0.06,
@@ -190,7 +215,7 @@ function CrownScene({
       groupRef.current.position.y, targetY, 0.06,
     );
 
-    // ── rotation (frozen during intro zoom) ────────────────────────────────
+    // ── rotation ──────────────────────────────────────────────────────────
     if (rawT >= 1) {
       groupRef.current.rotation.y = MathUtils.lerp(
         groupRef.current.rotation.y,
@@ -201,12 +226,21 @@ function CrownScene({
       groupRef.current.rotation.y = 0;
     }
 
-    const tiltTarget =
-      progress < 1.0
-        ? (Math.PI / 2) * centerState
-        : progress >= 2.0
-          ? (-Math.PI / 2) * centerState
-          : 0;
+    // rotation X (forward/back tilt)
+    let tiltTarget: number;
+    if (isNewSection) {
+      const t = clamp(
+        (progress - NEW_SEC_START) / (NEW_SEC_TILT_END - NEW_SEC_START),
+        0, 1,
+      );
+      tiltTarget = MathUtils.lerp(-Math.PI / 2, -0.22, easeOutCubic(t));
+    } else if (progress < 1.0) {
+      tiltTarget = (Math.PI / 2) * centerState;
+    } else if (progress >= 2.0) {
+      tiltTarget = (-Math.PI / 2) * centerState;
+    } else {
+      tiltTarget = 0;
+    }
 
     if (rawT >= 1) {
       groupRef.current.rotation.x = MathUtils.lerp(
@@ -218,8 +252,10 @@ function CrownScene({
       groupRef.current.rotation.x = (Math.PI / 2);
     }
 
+    // rotation Z (left-low / right-high diagonal in new section)
+    const zTarget = isNewSection ? 0.28 : 0;
     groupRef.current.rotation.z = MathUtils.lerp(
-      groupRef.current.rotation.z, 0, 0.08,
+      groupRef.current.rotation.z, zTarget, 0.06,
     );
   });
 
@@ -523,8 +559,16 @@ const SCROLL_KEY = "ik_scroll_pos";
 
 export default function CrownSplitHero() {
   const scrollYRef = useRef(0);
-  const [textAnimDone, setTextAnimDone] = useState(false);
-  const [introDone, setIntroDone] = useState(false);
+
+  // Read sessionStorage synchronously so skipIntro is correct on the very first render,
+  // preventing even a single frame of the intro animation when returning from a sub-page.
+  const [skipIntro] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem(SCROLL_KEY) !== null;
+  });
+
+  const [textAnimDone, setTextAnimDone] = useState(skipIntro);
+  const [introDone, setIntroDone] = useState(skipIntro);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   // On mount: restore saved scroll position and skip intro
@@ -575,7 +619,7 @@ export default function CrownSplitHero() {
     clamp(1 - (scrollProgress - 1.9) / 0.2, 0, 1);
 
   return (
-    <section className="relative w-full" style={{ height: "800vh" }}>
+    <section className="relative w-full" style={{ height: "1000vh" }}>
       <div className="sticky top-0 h-screen overflow-hidden">
         <LiquidBackground className="z-0" interactive={false} zoom={2.5} />
 
@@ -683,7 +727,7 @@ export default function CrownSplitHero() {
             <directionalLight position={[-4, 3, -2]} intensity={1.2} color="#ffe8b0" />
             <pointLight position={[0, 2, 3]} intensity={3.0} color="#ffe4a0" />
             <pointLight position={[0, -3, 2]} intensity={1.2} color="#fff0c0" />
-            <CrownScene scrollYRef={scrollYRef} onIntroDone={() => setIntroDone(true)} startZoom={textAnimDone} />
+            <CrownScene scrollYRef={scrollYRef} onIntroDone={() => setIntroDone(true)} startZoom={textAnimDone} skipIntro={skipIntro} />
           </Canvas>
         </div>
 
@@ -751,11 +795,13 @@ export default function CrownSplitHero() {
           // next profile's photoFadeIn = (fadeIn + 1) + 0.4 = fadeIn + 1.4
           const photoFadeOut = fadeIn + 1.4;
           const textOp = isLast
-            ? clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1)
+            ? clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
+              clamp(1 - (scrollProgress - 6.9) / 0.2, 0, 1)
             : clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
               clamp(1 - (scrollProgress - photoFadeOut) / 0.25, 0, 1);
           const photoOp = isLast
-            ? clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1)
+            ? clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
+              clamp(1 - (scrollProgress - 6.9) / 0.2, 0, 1)
             : clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
               clamp(1 - (scrollProgress - photoFadeOut) / 0.25, 0, 1);
 
@@ -769,6 +815,47 @@ export default function CrownSplitHero() {
             />
           );
         })}
+
+        {/* Last section — social links, bottom-right */}
+        {(() => {
+          const op = clamp((scrollProgress - 7.0) / 0.3, 0, 1);
+          if (op <= 0) return null;
+          const iconStyle: React.CSSProperties = {
+            filter: "brightness(0) invert(1)",
+            opacity: 0.7,
+          };
+          return (
+            <div
+              style={{
+                position: "absolute",
+                bottom: "2rem",
+                right: "2rem",
+                opacity: op,
+                zIndex: 20,
+                display: "flex",
+                alignItems: "center",
+                gap: "1.25rem",
+              }}
+            >
+              <a
+                href="https://www.facebook.com/InkKingsTattoo"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Ink Kings Tattoo on Facebook"
+              >
+                <img src="/facebook.svg" alt="" width={32} height={32} style={iconStyle} />
+              </a>
+              <a
+                href="https://www.instagram.com/inkkingstattoo/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Ink Kings Tattoo on Instagram"
+              >
+                <img src="/instagram.svg" alt="" width={32} height={32} style={iconStyle} />
+              </a>
+            </div>
+          );
+        })()}
       </div>
     </section>
   );

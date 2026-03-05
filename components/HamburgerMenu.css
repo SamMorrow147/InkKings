@@ -1,0 +1,293 @@
+/* ===================================================================
+   Hamburger menu – right-aligned burger, foggy overlay nav
+   =================================================================== */
+
+.hamburger-screen {
+  /* no position, overflow, or z-index — stay invisible to layout */
+}
+
+/* ---- Header / burger button (fixed, top-right) ---- */
+.hamburger-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 70;
+  pointer-events: none;
+}
+
+.target-burger {
+  pointer-events: auto;
+  position: relative;
+  margin: 1.25rem;
+  width: 3.25em;
+  height: 3.25em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.5s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.target-burger:hover {
+  opacity: 0.65;
+}
+
+.target-burger:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* ---- Buns (two lines → X) ---- */
+.buns {
+  width: 1.625em;
+  height: 1.625em;
+  display: block;
+  position: relative;
+  color: #fff;
+  transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1),
+              color 1s cubic-bezier(0.23, 1, 0.32, 1);
+  transform: translateZ(0);
+}
+
+.bun {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: currentColor;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -1px;
+  transition: transform 1s cubic-bezier(0.23, 1, 0.32, 1),
+              background-color 1s cubic-bezier(0.23, 1, 0.32, 1);
+  transform: translateY(-4px) translateZ(0);
+}
+
+.bun:last-child {
+  transform: translateY(4px) translateZ(0);
+}
+
+/* Toggled → X */
+.target-burger.toggled .bun {
+  transform: rotate(45deg) translateZ(0);
+}
+
+.target-burger.toggled .bun:last-child {
+  transform: rotate(-45deg) translateZ(0);
+}
+
+/* ---- Foggy full-screen overlay nav ---- */
+.main-nav {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  padding: 5rem 2rem 2rem;
+  background: rgba(10, 10, 10, 0.82);
+  -webkit-backdrop-filter: blur(24px) saturate(120%);
+  backdrop-filter: blur(24px) saturate(120%);
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.main-nav.toggled {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.main-nav-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: 1rem;
+}
+
+/* ---- Top-level list ---- */
+.main-nav > .main-nav-inner > ul {
+  padding: 0;
+  list-style: none;
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-nav > .main-nav-inner > ul > li {
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid rgba(191, 132, 26, 0.15);
+}
+
+.main-nav > .main-nav-inner > ul > li:last-child {
+  border-bottom: none;
+}
+
+/* Top-level links */
+.main-nav > .main-nav-inner > ul > li > a {
+  font-family: "trajan-pro-3", serif;
+  font-size: clamp(1.8rem, 6vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f5f5f5;
+  padding: 0.45em 0;
+  display: block;
+  text-align: center;
+  transition: color 0.35s ease;
+  text-decoration: none;
+}
+
+.main-nav > .main-nav-inner > ul > li > a:hover {
+  color: #bf841a;
+}
+
+/* ---- Artists parent button ---- */
+.nav-has-children {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-parent-btn {
+  font-family: "trajan-pro-3", serif;
+  font-size: clamp(1.8rem, 6vw, 3.5rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f5f5f5;
+  padding: 0.45em 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  transition: color 0.35s ease;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+}
+
+.nav-parent-btn:hover {
+  color: #bf841a;
+}
+
+.nav-parent-btn.open {
+  color: #bf841a;
+  font-weight: 600;
+}
+
+/* Chevron arrow */
+.nav-chevron {
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translateY(-0.1em);
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  flex-shrink: 0;
+  margin-bottom: 0.05em;
+}
+
+.nav-parent-btn.open .nav-chevron {
+  transform: rotate(-135deg) translateY(-0.1em);
+}
+
+/* ---- Artists sub-drawer ---- */
+.nav-drawer {
+  width: 100%;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.nav-drawer.open {
+  max-height: 500px;
+}
+
+.nav-drawer-list {
+  padding: 0 0 0.5rem;
+  list-style: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  border-top: 1px solid rgba(191, 132, 26, 0.1);
+}
+
+.nav-drawer-list li {
+  width: 100%;
+  text-align: center;
+}
+
+.nav-drawer-list a {
+  font-family: "trajan-pro-3", serif;
+  font-size: clamp(1.2rem, 3.5vw, 2rem);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(245, 245, 245, 0.7);
+  padding: 0.45em 0;
+  display: block;
+  text-align: center;
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+
+.nav-drawer-list a:hover {
+  color: #bf841a;
+}
+
+/* ---- Social icons at the bottom ---- */
+.nav-social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: auto;
+  padding-top: 1.25rem;
+}
+
+.nav-social a {
+  padding: 0.25em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s ease;
+}
+
+.nav-social a:hover {
+  opacity: 1;
+}
+
+.nav-social img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  filter: brightness(0) invert(1);
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.nav-social a:hover img {
+  opacity: 0.9;
+}
+
+.hamburger-container {
+  /* clean pass-through, no filter */
+}

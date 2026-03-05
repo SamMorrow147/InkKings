@@ -23,70 +23,153 @@ const slides = [
 
 export default function AustinPortfolioPage() {
   return (
-    <main style={{ background: "#000", minHeight: "100vh", color: "#f5f5f5", fontFamily: '"trajan-pro-3", serif' }}>
+    <main
+      style={{
+        background: "#000",
+        minHeight: "100vh",
+        color: "#f5f5f5",
+        fontFamily: '"trajan-pro-3", serif',
+      }}
+    >
+      {/* Back nav */}
       <div className="px-6 py-6">
         <Link
           href="/"
           style={{
-            display: "inline-flex", alignItems: "center", gap: "0.4rem",
-            fontSize: "0.8rem", letterSpacing: "0.2em", textTransform: "uppercase",
-            color: "rgba(255,255,255,0.5)", textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.4rem",
+            fontSize: "0.8rem",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.5)",
+            textDecoration: "none",
+            transition: "color 0.2s",
           }}
         >
           ← Back
         </Link>
       </div>
 
-      <section style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "2rem 1.5rem 4rem", maxWidth: 760, margin: "0 auto" }}>
-        {/* Portrait */}
-        <div style={{ width: "clamp(220px,50vw,320px)", height: "clamp(220px,50vw,320px)", borderRadius: "50%", overflow: "hidden", marginBottom: "2rem", maskImage: "radial-gradient(circle, black 55%, transparent 80%)", WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 80%)", flexShrink: 0 }}>
-          <Image src="/PHimage.png" alt="Austin Jackels" width={320} height={320} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
-        </div>
+      <div className="flex flex-col">
+        {/* About the artist */}
+        <section
+          className="order-2 md:order-1"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+            padding: "2rem 1.5rem 4rem",
+            maxWidth: 760,
+            margin: "0 auto",
+            width: "100%",
+          }}
+        >
+          <div
+            style={{
+              width: "clamp(220px, 50vw, 320px)",
+              height: "clamp(220px, 50vw, 320px)",
+              borderRadius: "50%",
+              overflow: "hidden",
+              marginBottom: "2rem",
+              maskImage: "radial-gradient(circle, black 55%, transparent 80%)",
+              WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 80%)",
+              flexShrink: 0,
+            }}
+          >
+            <Image
+              src="/PHimage.png"
+              alt="Austin Jackels"
+              width={320}
+              height={320}
+              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
+              priority
+            />
+          </div>
 
-        <h1 style={{ fontSize: "clamp(1.8rem,5vw,3rem)", fontWeight: 600, letterSpacing: "0.05em", margin: "0 0 0.5rem" }}>
-          Austin Jackels
-        </h1>
-        <p style={{ fontSize: "0.75rem", fontWeight: 300, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.45)", margin: "0 0 1.5rem" }}>
-          Tattoo Artist &nbsp;·&nbsp; Ink Kings Tattoo
-        </p>
+          <h1
+            style={{
+              fontSize: "clamp(1.8rem, 5vw, 3rem)",
+              fontWeight: 600,
+              letterSpacing: "0.05em",
+              margin: "0 0 0.5rem",
+            }}
+          >
+            Austin Jackels
+          </h1>
 
-        {/* Book button */}
-        <div style={{ marginBottom: "2.5rem" }}>
-          <style>{`.gold-btn-a{outline:0;border:0;background:transparent;position:relative;cursor:pointer;font-size:clamp(11px,1.5vw,14px);overflow:hidden;}.gold-btn-a span{position:relative;z-index:2;display:block;font-weight:bold;padding:.5em 1.4em;letter-spacing:.15em;font-family:"trajan-pro-3",serif;background:linear-gradient(295deg,#ffe5a2 5%,#bf841a 50%,#ffcd74 95%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}.gold-btn-a:before{content:"";position:absolute;inset:0;background:conic-gradient(transparent 0deg,rgba(143,168,255,0.2) 100deg,transparent 150deg,transparent 230deg,rgba(191,122,0,0.75) 250deg,rgba(242,187,90,0.9) 280deg,#ffe195 280deg,rgba(242,187,90,0.9) 300deg,rgba(191,122,0,0.75) 310deg,transparent 360deg);transform:scaleX(4) scaleY(2) rotate(0deg);transition:.5s transform;}.gold-btn-a:hover:before{transform:scaleX(4) scaleY(2) rotate(-360deg);}.gold-btn-a:after{content:"";position:absolute;inset:.05em;background-color:#000;}.gold-btn-a span:before{content:"";position:absolute;inset:0;background-image:linear-gradient(295deg,#ffe195 0%,rgba(242,187,90,0.8) 15%,rgba(191,122,0,0.75) 30%,transparent 95%);opacity:0;transition:opacity .5s ease;}.gold-btn-a:hover span:before{opacity:1;}.gold-btn-a:hover span{background:#fff;-webkit-background-clip:text;background-clip:text;}`}</style>
-          <button className="gold-btn-a" type="button">
-            <span>BOOK A SESSION</span>
-          </button>
-        </div>
+          <p
+            style={{
+              fontSize: "0.75rem",
+              fontWeight: 300,
+              letterSpacing: "0.25em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.45)",
+              margin: "0 0 1.5rem",
+            }}
+          >
+            Tattoo Artist &nbsp;·&nbsp; Ink Kings Tattoo
+          </p>
 
-        {/* Bio */}
-        <p style={{ fontFamily: '"myriad-pro","Helvetica Neue",Arial,sans-serif', fontWeight: 300, fontSize: "clamp(0.9rem,2vw,1.05rem)", lineHeight: 1.8, color: "rgba(255,255,255,0.65)", maxWidth: 660, marginBottom: "1.5rem" }}>
-          Austin is originally from Minnesota, but spent some time in Duval, Washington, where he
-          graduated from Cedar Crest High School. He returned to MN with the desire to find a tattoo
-          apprenticeship. From the age of 15, Austin knew he had a future in art — he didn&apos;t
-          want to work in graphics or sit behind a desk; he wanted to tattoo. Austin started his
-          apprenticeship with Steve De Los Reyes over the summer of 2018. He likes working with
-          traditional coil tattoo machines and his favorite style of art is realism. In the future,
-          he looks forward to being a versatile artist, specializing in color pieces.
-        </p>
+          <div style={{ marginBottom: "2.5rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
+            <span className="gold-btn" style={{ cursor: "default" }}>
+              <span>BOOK A SESSION</span>
+            </span>
+            <a
+              href="https://www.instagram.com/austinjtattoos/?hl=en"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Austin Jackels on Instagram"
+              className="artist-social-link"
+            >
+              <img src="/instagram.svg" alt="" width={24} height={24} style={{ filter: "brightness(0) invert(1)", display: "block" }} />
+            </a>
+          </div>
 
-        {/* Quote */}
-        <blockquote style={{ fontFamily: '"myriad-pro","Helvetica Neue",Arial,sans-serif', fontStyle: "italic", fontWeight: 300, fontSize: "clamp(0.9rem,2vw,1rem)", lineHeight: 1.8, color: "rgba(255,255,255,0.45)", maxWidth: 580, borderLeft: "2px solid rgba(191,132,26,0.4)", paddingLeft: "1.5rem", textAlign: "left", margin: "0 0 1.5rem" }}>
-          &ldquo;My focus right now is color blending and saturation, technique and stroke, and needle
-          groupings. Steve pushes me out of my comfort zone to improve my skills and is real with me
-          about artist expectations.&rdquo;
-        </blockquote>
+          <p
+            style={{
+              fontFamily: '"myriad-pro", "Helvetica Neue", Arial, sans-serif',
+              fontWeight: 300,
+              fontSize: "clamp(0.9rem, 2vw, 1.05rem)",
+              lineHeight: 1.8,
+              color: "rgba(255,255,255,0.65)",
+              maxWidth: 660,
+            }}
+          >
+            Realism specialist with a passion for color pieces. Austin started his apprenticeship
+            with Steve De Los Reyes in 2018, working with traditional coil tattoo machines and
+            focused on color blending, saturation, and technique. Originally from Minnesota, he
+            knew from the age of 15 that he had a future in art — not behind a desk, but
+            tattooing. He looks forward to growing into a versatile artist while continuing to
+            specialize in color realism.
+          </p>
+        </section>
 
-        <p style={{ fontFamily: '"myriad-pro","Helvetica Neue",Arial,sans-serif', fontWeight: 300, fontSize: "0.85rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em" }}>
-          Thanks to my Grandma and Grandpa for all of their support! &nbsp;~Austin Jackels
-        </p>
-      </section>
-
-      <section style={{ background: "#000", padding: "4rem 0 6rem", overflow: "hidden" }}>
-        <p style={{ textAlign: "center", fontSize: "0.7rem", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "3rem" }}>
-          Portfolio
-        </p>
-        <PortfolioSlideshow slides={slides} />
-      </section>
+        {/* Portfolio slider */}
+        <section
+          className="order-1 md:order-2"
+          style={{
+            background: "#000",
+            padding: "2rem 0 4rem",
+            overflow: "hidden",
+          }}
+        >
+          <p
+            style={{
+              textAlign: "center",
+              fontSize: "0.7rem",
+              letterSpacing: "0.3em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.35)",
+              marginBottom: "3rem",
+            }}
+          >
+            Portfolio
+          </p>
+          <PortfolioSlideshow slides={slides} />
+        </section>
+      </div>
     </main>
   );
 }
