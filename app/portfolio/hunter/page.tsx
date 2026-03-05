@@ -65,9 +65,9 @@ export default function HunterPortfolioPage() {
           </p>
 
           <div style={{ marginBottom: "2.5rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
-            <span className="gold-btn" style={{ cursor: "default" }}>
+            <a href="/contact" className="gold-btn">
               <span>BOOK A SESSION</span>
-            </span>
+            </a>
             <a
               href="https://www.instagram.com/hunterhulleytattoo/?hl=en"
               target="_blank"

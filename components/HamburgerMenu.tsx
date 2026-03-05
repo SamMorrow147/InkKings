@@ -100,6 +100,11 @@ export default function HamburgerMenu({
               <a href="/location" onClick={closeMenu}>Location</a>
             </li>
 
+            {/* Aftercare */}
+            <li>
+              <a href="/aftercare" onClick={closeMenu}>Aftercare</a>
+            </li>
+
             {/* Contact */}
             <li>
               <a href="/contact" onClick={closeMenu}>Contact</a>

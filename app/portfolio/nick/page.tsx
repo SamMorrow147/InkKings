@@ -59,7 +59,7 @@ export default function NickPortfolioPage() {
         {/* About the artist */}
         <section className="order-2 md:order-1" style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "2rem 1.5rem 4rem", maxWidth: 760, margin: "0 auto", width: "100%" }}>
           <div style={{ width: "clamp(220px,50vw,320px)", height: "clamp(220px,50vw,320px)", borderRadius: "50%", overflow: "hidden", marginBottom: "2rem", maskImage: "radial-gradient(circle, black 55%, transparent 80%)", WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 80%)", flexShrink: 0 }}>
-            <Image src="/PHimage.png" alt="Nick Gagnon" width={320} height={320} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
+            <Image src="/Nick.png" alt="Nick Gagnon" width={320} height={320} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
           </div>
 
           <h1 style={{ fontSize: "clamp(1.8rem,5vw,3rem)", fontWeight: 600, letterSpacing: "0.05em", margin: "0 0 0.5rem" }}>
@@ -70,9 +70,9 @@ export default function NickPortfolioPage() {
           </p>
 
           <div style={{ marginBottom: "2.5rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem" }}>
-            <span className="gold-btn" style={{ cursor: "default" }}>
+            <a href="/contact" className="gold-btn">
               <span>BOOK A SESSION</span>
-            </span>
+            </a>
             <a
               href="https://www.instagram.com/nick_tattoos/?hl=en"
               target="_blank"

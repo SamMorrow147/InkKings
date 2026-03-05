@@ -146,47 +146,43 @@ export default function LocationPage() {
             8564 Parell Ave NE &nbsp;·&nbsp; Otsego, MN 55330
           </p>
 
-          {/* Map placeholder */}
+          {/* Google Maps embed */}
           <div
             style={{
               width: "100%",
-              height: "clamp(280px, 40vw, 420px)",
               borderRadius: 4,
+              overflow: "hidden",
               border: "1px solid rgba(191,132,26,0.2)",
-              background: "rgba(255,255,255,0.03)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "0.75rem",
-              color: "rgba(255,255,255,0.25)",
             }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="40"
-              height="40"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ opacity: 0.4 }}
-            >
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
-              <circle cx="12" cy="9" r="2.5" />
-            </svg>
-            <span
-              style={{
-                fontFamily: '"myriad-pro", "Helvetica Neue", Arial, sans-serif',
-                fontSize: "0.75rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-              }}
-            >
-              Google Maps — Coming Soon
-            </span>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2665.048343768532!2d-93.56475387975073!3d45.28300674168623!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x52b3690a5f311bed%3A0xe47891e2c83541b9!2sInk%20Kings%20Tattoo!5e0!3m2!1sen!2sus!4v1772741265410!5m2!1sen!2sus"
+              width="100%"
+              height="450"
+              style={{ border: 0, display: "block" }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Ink Kings Tattoo on Google Maps"
+            />
+          </div>
+
+          {/* CTA buttons */}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "1rem",
+              justifyContent: "center",
+              marginTop: "3rem",
+            }}
+          >
+            <Link href="/#artists" className="gold-btn">
+              <span>MEET THE TEAM</span>
+            </Link>
+            <Link href="/contact" className="gold-btn">
+              <span>REQUEST CUSTOM ART</span>
+            </Link>
           </div>
         </section>
 

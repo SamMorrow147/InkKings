@@ -19,6 +19,32 @@ body {
   font-family: "myriad-pro", "Helvetica Neue", Arial, sans-serif;
 }
 
+/* ── Form inputs ─────────────────────────────────────────────────────────── */
+.ik-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(191, 132, 26, 0.2);
+  border-radius: 2px;
+  color: #f5f5f5;
+  font-family: "myriad-pro", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 300;
+  padding: 0.75em 1em;
+  outline: none;
+  transition: border-color 0.25s ease;
+  box-sizing: border-box;
+}
+.ik-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+.ik-input:focus {
+  border-color: rgba(191, 132, 26, 0.6);
+}
+.ik-input option {
+  background: #111;
+  color: #f5f5f5;
+}
+
 /* ── Artist social icon link ─────────────────────────────────────────────── */
 .artist-social-link {
   display: flex;

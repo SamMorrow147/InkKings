@@ -187,7 +187,7 @@ function CrownScene({
         (progress - NEW_SEC_START) / (NEW_SEC_TILT_END - NEW_SEC_START),
         0, 1,
       );
-      profileScale = MathUtils.lerp(0.45, 0.78, easeOutCubic(t));
+      profileScale = MathUtils.lerp(0.45, 0.32, easeOutCubic(t));
     } else {
       profileScale = MathUtils.lerp(1.0, 0.45, clamp((progress - 2.0) / 0.5, 0, 1));
     }
@@ -417,19 +417,39 @@ function SectionsText() {
 
   return (
     <div className="relative">
-      {desktopBlock(
-        opacity2,
-        "Ink Kings",
-        "Custom Tattoos",
-        "Large-scale realism, detailed portraits, and wildlife pieces designed and executed in-house."
-      )}
+      {/* §2 desktop — Custom Tattoos with button */}
+      <div
+        className="absolute inset-0 hidden md:block"
+        style={{ opacity: opacity2, pointerEvents: opacity2 > 0.5 ? "auto" : "none" }}
+      >
+        <p className={eyebrow}>Ink Kings</p>
+        <h1 className={heading}>Custom Tattoos</h1>
+        <p className={body}>
+          Large-scale realism, detailed portraits, and wildlife pieces designed and executed in-house.
+        </p>
+        <div style={{ marginTop: "2rem", display: "flex" }}>
+          <a href="/contact" className="gold-btn">
+            <span>REQUEST CUSTOM ART</span>
+          </a>
+        </div>
+      </div>
 
-      {desktopBlock(
-        opacity3,
-        "Recognition",
-        "Best Parlor",
-        "Voted Best Tattoo Parlor in 2020, 2021, and 2022 by Sun Media Readers."
-      )}
+      {/* §3 desktop — Best Parlor with button */}
+      <div
+        className="absolute inset-0 hidden md:block"
+        style={{ opacity: opacity3, pointerEvents: opacity3 > 0.5 ? "auto" : "none" }}
+      >
+        <p className={eyebrow}>Recognition</p>
+        <h1 className={heading}>Best Parlor</h1>
+        <p className={body}>
+          Voted Best Tattoo Parlor in 2020, 2021, and 2022 by Sun Media Readers.
+        </p>
+        <div style={{ marginTop: "2rem", display: "flex" }}>
+          <a href="/location" className="gold-btn">
+            <span>OUR LOCATION</span>
+          </a>
+        </div>
+      </div>
 
       {/* §4 is rendered as a separate bottom-pinned block outside this container */}
     </div>
@@ -459,7 +479,7 @@ const profiles = [
     slug:        "austin",
     status:      "Accepting New Clients",
     bio:         "Realism specialist with a passion for color pieces. Apprenticed under Steve De Los Reyes in 2018, working with traditional coil machines and focused on color blending, saturation, and technique.",
-    photo:       "/PHimage.png",
+    photo:       "/Austin.png",
     booksClosed: false,
   },
   {
@@ -467,7 +487,7 @@ const profiles = [
     slug:        "nick",
     status:      "Accepting New Clients",
     bio:         "Black and grey realism specialist. Tattooing since 2011, with experience across Minnesota and the Carolinas. Known for surrealism, dark art, horror, wildlife, portraiture, and geometric blackwork.",
-    photo:       "/PHimage.png",
+    photo:       "/Nick.png",
     booksClosed: false,
   },
   {
@@ -475,7 +495,7 @@ const profiles = [
     slug:        "john",
     status:      "Accepting New Clients",
     bio:         "Specializing in black and grey realism and color realism. Looking forward to working with clients on creative, challenging pieces.",
-    photo:       "/PHimage.png",
+    photo:       "/John.png",
     booksClosed: false,
   },
 ];
@@ -539,9 +559,9 @@ function ProfileBlock({
             </>
           ) : (
             <>
-              <span className="gold-btn" style={{ cursor: "default" }}>
+              <a href="/contact" className="gold-btn">
                 <span>BOOK A SESSION</span>
-              </span>
+              </a>
               <a href={`/portfolio/${profile.slug}`} className="gold-btn">
                 <span>PORTFOLIO</span>
               </a>
@@ -620,6 +640,8 @@ export default function CrownSplitHero() {
 
   return (
     <section className="relative w-full" style={{ height: "1000vh" }}>
+      {/* Anchor for "Meet the Team" deep-links — positioned at the scroll depth where Steve's profile appears */}
+      <div id="artists" style={{ position: "absolute", top: "200vh", left: 0, height: 0, pointerEvents: "none" }} />
       <div className="sticky top-0 h-screen overflow-hidden">
         <LiquidBackground className="z-0" interactive={false} zoom={2.5} />
 
@@ -757,6 +779,11 @@ export default function CrownSplitHero() {
               <p className="font-body text-base font-light leading-relaxed text-neutral-300">
                 Large-scale realism, detailed portraits, and wildlife pieces designed and executed in-house.
               </p>
+              <div style={{ marginTop: "1.5rem", display: "flex" }}>
+                <a href="/contact" className="gold-btn">
+                  <span>REQUEST CUSTOM ART</span>
+                </a>
+              </div>
             </div>
           ) : null;
         })()}
@@ -783,6 +810,11 @@ export default function CrownSplitHero() {
           <p className="font-body text-sm font-light leading-relaxed text-neutral-300">
             Voted Best Tattoo Parlor in 2020, 2021, and 2022 by Sun Media Readers.
           </p>
+          <div style={{ marginTop: "1.5rem", display: "flex" }}>
+            <a href="/location" className="gold-btn">
+              <span>OUR LOCATION</span>
+            </a>
+          </div>
         </div>
 
         {/* §4-6 — artist profile blocks */}
@@ -816,7 +848,7 @@ export default function CrownSplitHero() {
           );
         })}
 
-        {/* Last section — social links, bottom-right */}
+        {/* Last section — centre content (social icons + heading + body + cta) */}
         {(() => {
           const op = clamp((scrollProgress - 7.0) / 0.3, 0, 1);
           if (op <= 0) return null;
@@ -828,31 +860,54 @@ export default function CrownSplitHero() {
             <div
               style={{
                 position: "absolute",
-                bottom: "2rem",
-                right: "2rem",
-                opacity: op,
+                bottom: "clamp(8rem, 18vh, 14rem)",
+                left: 0,
+                right: 0,
                 zIndex: 20,
                 display: "flex",
+                flexDirection: "column",
                 alignItems: "center",
-                gap: "1.25rem",
+                textAlign: "center",
+                padding: "0 1.5rem",
+                opacity: op,
+                pointerEvents: op > 0.5 ? "auto" : "none",
               }}
             >
-              <a
-                href="https://www.facebook.com/InkKingsTattoo"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Ink Kings Tattoo on Facebook"
+              <h2
+                className="mb-4 text-4xl font-semibold leading-tight md:mb-8 md:text-6xl lg:text-7xl"
+                style={{ fontFamily: '"trajan-pro-3", serif', letterSpacing: "0.05em", color: "#f5f5f5" }}
               >
-                <img src="/facebook.svg" alt="" width={32} height={32} style={iconStyle} />
-              </a>
-              <a
-                href="https://www.instagram.com/inkkingstattoo/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Ink Kings Tattoo on Instagram"
+                Claim Your Crown
+              </h2>
+              <p
+                className="font-body text-base font-light leading-relaxed text-neutral-300 md:text-xl"
+                style={{ maxWidth: 480, margin: "0 0 1.75rem" }}
               >
-                <img src="/instagram.svg" alt="" width={32} height={32} style={iconStyle} />
+                Bring us your idea, your reference, or just a rough concept. Our artists will help turn it into a tattoo you&apos;ll be proud to wear.
+              </p>
+              <a href="/contact" className="gold-btn">
+                <span>REQUEST CUSTOM ART</span>
               </a>
+
+              {/* Social icons */}
+              <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", marginTop: "1.5rem" }}>
+                <a
+                  href="https://www.facebook.com/InkKingsTattoo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Ink Kings Tattoo on Facebook"
+                >
+                  <img src="/facebook.svg" alt="" width={28} height={28} style={iconStyle} />
+                </a>
+                <a
+                  href="https://www.instagram.com/inkkingstattoo/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Ink Kings Tattoo on Instagram"
+                >
+                  <img src="/instagram.svg" alt="" width={28} height={28} style={iconStyle} />
+                </a>
+              </div>
             </div>
           );
         })()}
