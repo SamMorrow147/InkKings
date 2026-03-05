@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import PortfolioSlideshow from "@/components/PortfolioSlideshow";
+import PortfolioBook from "@/components/PortfolioBook";
 
 export const metadata: Metadata = {
   title: "John Carpenter — Portfolio | Ink Kings Tattoo",
@@ -24,7 +24,7 @@ const slides = [
 export default function JohnPortfolioPage() {
   return (
     <main style={{ background: "#000", minHeight: "100vh", color: "#f5f5f5", fontFamily: '"trajan-pro-3", serif' }}>
-      <div className="px-6 py-6">
+      <div className="px-6 py-4 pr-20 flex items-center gap-6">
         <Link
           href="/"
           style={{
@@ -35,6 +35,9 @@ export default function JohnPortfolioPage() {
         >
           ← Back
         </Link>
+        <span style={{ fontSize: "0.8rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
+          Portfolio
+        </span>
       </div>
 
       <div className="flex flex-col">
@@ -79,11 +82,8 @@ export default function JohnPortfolioPage() {
         </section>
 
         {/* Portfolio slider */}
-        <section className="order-1 md:order-2" style={{ background: "#000", padding: "2rem 0 4rem", overflow: "hidden" }}>
-          <p style={{ textAlign: "center", fontSize: "0.7rem", letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: "3rem" }}>
-            Portfolio
-          </p>
-          <PortfolioSlideshow slides={slides} />
+        <section className="order-1 md:order-2" style={{ background: "#000", padding: "0 0 4rem", overflow: "hidden" }}>
+          <PortfolioBook slides={slides} />
         </section>
       </div>
     </main>

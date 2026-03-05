@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import PortfolioSlideshow from "@/components/PortfolioSlideshow";
+import PortfolioBook from "@/components/PortfolioBook";
 
 export const metadata: Metadata = {
   title: "Austin Jackels — Portfolio | Ink Kings Tattoo",
@@ -31,8 +31,8 @@ export default function AustinPortfolioPage() {
         fontFamily: '"trajan-pro-3", serif',
       }}
     >
-      {/* Back nav */}
-      <div className="px-6 py-6">
+      {/* Back + Portfolio on one line (hamburger is fixed top-right) */}
+      <div className="px-6 py-4 pr-20 flex items-center gap-6">
         <Link
           href="/"
           style={{
@@ -49,6 +49,9 @@ export default function AustinPortfolioPage() {
         >
           ← Back
         </Link>
+        <span style={{ fontSize: "0.8rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
+          Portfolio
+        </span>
       </div>
 
       <div className="flex flex-col">
@@ -151,23 +154,11 @@ export default function AustinPortfolioPage() {
           className="order-1 md:order-2"
           style={{
             background: "#000",
-            padding: "2rem 0 4rem",
+            padding: "0 0 4rem",
             overflow: "hidden",
           }}
         >
-          <p
-            style={{
-              textAlign: "center",
-              fontSize: "0.7rem",
-              letterSpacing: "0.3em",
-              textTransform: "uppercase",
-              color: "rgba(255,255,255,0.35)",
-              marginBottom: "3rem",
-            }}
-          >
-            Portfolio
-          </p>
-          <PortfolioSlideshow slides={slides} />
+          <PortfolioBook slides={slides} />
         </section>
       </div>
     </main>

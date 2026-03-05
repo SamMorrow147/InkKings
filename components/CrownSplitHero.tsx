@@ -21,7 +21,7 @@ const clamp = (v: number, lo: number, hi: number) =>
   Math.min(Math.max(v, lo), hi);
 
 // ─── 3-D crown mesh (Vectary export with MTL + textures) ─────────────────────
-const MODEL_DIR = "/models/gold_crown_1-6";
+const MODEL_DIR = "/models/gold_crown_1-7";
 
 function CrownMesh() {
   const materials = useLoader(
@@ -47,14 +47,22 @@ function CrownMesh() {
       const mesh   = child as Mesh;
       const oldMat = mesh.material as MeshStandardMaterial;
 
-      mesh.material = new MeshStandardMaterial({
-        map:          oldMat.map,
-        normalMap,
-        roughnessMap,
-        metalness:    0.85,
-        roughness:    0.4,
-        side:         DoubleSide,
-      });
+      const isEmblem = oldMat.name === "May Mist" || oldMat.name === "Garden Glory";
+      mesh.material = isEmblem
+        ? new MeshStandardMaterial({
+            color:     0x000000,
+            metalness: 0.1,
+            roughness: 0.9,
+            side:      DoubleSide,
+          })
+        : new MeshStandardMaterial({
+            map:          oldMat.map,
+            normalMap,
+            roughnessMap,
+            metalness:    0.85,
+            roughness:    0.4,
+            side:         DoubleSide,
+          });
     });
 
     const box     = new Box3().setFromObject(object);
@@ -848,6 +856,44 @@ export default function CrownSplitHero() {
           );
         })}
 
+        {/* Site credit tag — fades in after Claim Your Crown content */}
+        {(() => {
+          const op = clamp((scrollProgress - 7.5) / 0.3, 0, 1);
+          if (op <= 0) return null;
+          return (
+            <a
+              href="https://clubhausagency.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Site credit: Clubhaus Agency"
+              style={{
+                position: "fixed",
+                right: 0,
+                bottom: 0,
+                padding: "0 1.5rem 1.5rem",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: "0.6rem",
+                zIndex: 50,
+                opacity: op,
+                pointerEvents: op > 0.1 ? "auto" : "none",
+                textDecoration: "none",
+              }}
+            >
+              <div style={{ lineHeight: 1.35, textAlign: "right" }}>
+                <div style={{ fontFamily: "Helvetica, Arial, sans-serif", fontSize: "10px", fontWeight: 400, color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  Site Credit
+                </div>
+                <div style={{ fontFamily: "Helvetica, Arial, sans-serif", fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.8)", letterSpacing: "0.02em" }}>
+                  Clubhaus Agency
+                </div>
+              </div>
+              <img src="/CH_Tag.png" alt="Clubhaus Agency" width={36} height={36} style={{ display: "block", flexShrink: 0 }} />
+            </a>
+          );
+        })()}
+
         {/* Last section — centre content (social icons + heading + body + cta) */}
         {(() => {
           const op = clamp((scrollProgress - 7.0) / 0.3, 0, 1);
@@ -883,10 +929,10 @@ export default function CrownSplitHero() {
                 className="font-body text-base font-light leading-relaxed text-neutral-300 md:text-xl"
                 style={{ maxWidth: 480, margin: "0 0 1.75rem" }}
               >
-                Bring us your idea, your reference, or just a rough concept. Our artists will help turn it into a tattoo you&apos;ll be proud to wear.
+                Permanent art pieces crafted by tattoo royalty. Submit your idea, reference, or rough concept for our artists&apos; consideration.
               </p>
               <a href="/contact" className="gold-btn">
-                <span>REQUEST CUSTOM ART</span>
+                <span>MAKE A REQUEST</span>
               </a>
 
               {/* Social icons */}

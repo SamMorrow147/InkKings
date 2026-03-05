@@ -1,0 +1,10 @@
+newmtl Wood 2
+Kd 1.000 1.000 1.000
+d 1.000
+map_Kd abstract-fractal-geometric-figure-background-with-texture.jpg
+newmtl May Mist
+Kd 0.000 0.000 0.000
+d 1.000
+newmtl Garden Glory
+Kd 0.000 0.000 0.000
+d 1.000

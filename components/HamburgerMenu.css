@@ -3,12 +3,12 @@
    =================================================================== */
 
 .hamburger-screen {
-  /* no position, overflow, or z-index — stay invisible to layout */
+  position: relative;
 }
 
-/* ---- Header / burger button (fixed, top-right) ---- */
+/* ---- Header / burger button (absolute, top-right — scrolls with page) ---- */
 .hamburger-header {
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   z-index: 70;
@@ -18,7 +18,7 @@
 .target-burger {
   pointer-events: auto;
   position: relative;
-  margin: 1.25rem;
+  margin: 0.5rem 1rem;
   width: 3.25em;
   height: 3.25em;
   display: flex;
