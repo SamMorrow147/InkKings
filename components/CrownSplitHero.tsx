@@ -598,6 +598,14 @@ export default function CrownSplitHero() {
   const [textAnimDone, setTextAnimDone] = useState(skipIntro);
   const [introDone, setIntroDone] = useState(skipIntro);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   // On mount: restore saved scroll position and skip intro
   useEffect(() => {
@@ -856,10 +864,11 @@ export default function CrownSplitHero() {
           );
         })}
 
-        {/* Site credit tag — fades in after Claim Your Crown content */}
+        {/* Site credit tag — fades in after scrolling further past Claim Your Crown */}
         {(() => {
-          const op = clamp((scrollProgress - 7.5) / 0.3, 0, 1);
+          const op = clamp((scrollProgress - 7.9) / 0.25, 0, 1);
           if (op <= 0) return null;
+          const small = isMobile;
           return (
             <a
               href="https://clubhausagency.com"
@@ -870,11 +879,11 @@ export default function CrownSplitHero() {
                 position: "fixed",
                 right: 0,
                 bottom: 0,
-                padding: "0 1.5rem 1.5rem",
+                padding: small ? "0 0.75rem 0.75rem" : "0 1.5rem 1.5rem",
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                gap: "0.6rem",
+                gap: small ? "0.35rem" : "0.6rem",
                 zIndex: 50,
                 opacity: op,
                 pointerEvents: op > 0.1 ? "auto" : "none",
@@ -882,14 +891,14 @@ export default function CrownSplitHero() {
               }}
             >
               <div style={{ lineHeight: 1.35, textAlign: "right" }}>
-                <div style={{ fontFamily: "Helvetica, Arial, sans-serif", fontSize: "10px", fontWeight: 400, color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                <div style={{ fontFamily: "Helvetica, Arial, sans-serif", fontSize: small ? "8px" : "10px", fontWeight: 400, color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
                   Site Credit
                 </div>
-                <div style={{ fontFamily: "Helvetica, Arial, sans-serif", fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.8)", letterSpacing: "0.02em" }}>
+                <div style={{ fontFamily: "Helvetica, Arial, sans-serif", fontSize: small ? "10px" : "13px", fontWeight: 600, color: "rgba(255,255,255,0.8)", letterSpacing: "0.02em" }}>
                   Clubhaus Agency
                 </div>
               </div>
-              <img src="/CH_Tag.png" alt="Clubhaus Agency" width={36} height={36} style={{ display: "block", flexShrink: 0 }} />
+              <img src="/CH_Tag.png" alt="Clubhaus Agency" width={small ? 24 : 36} height={small ? 24 : 36} style={{ display: "block", flexShrink: 0 }} />
             </a>
           );
         })()}

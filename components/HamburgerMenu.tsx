@@ -35,11 +35,11 @@ export default function HamburgerMenu({
   };
 
   const closeMenu = () => setToggled(false);
-  const isHome = pathname === "/";
+  const isPortfolio = pathname?.startsWith("/portfolio") ?? false;
 
   return (
     <div className="hamburger-screen">
-      <header className={`hamburger-header ${isHome ? "hamburger-header--fixed" : ""}`}>
+      <header className={`hamburger-header ${isPortfolio ? "hamburger-header--portfolio" : ""}`}>
         <button
           type="button"
           className={`target-burger ${toggled ? "toggled" : ""}`}

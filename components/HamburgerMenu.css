@@ -6,24 +6,23 @@
   position: relative;
 }
 
-/* ---- Header / burger button (default: absolute — scrolls with page) ---- */
+/* ---- Header / burger button (fixed, top-right) ---- */
 .hamburger-header {
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   z-index: 70;
   pointer-events: none;
 }
 
-/* Homepage — stays fixed/sticky */
-.hamburger-header--fixed {
-  position: fixed;
+.hamburger-header--portfolio .target-burger {
+  margin-top: 0.1rem;
 }
 
 .target-burger {
   pointer-events: auto;
   position: relative;
-  margin: 0.75rem 1.25rem;
+  margin: 0.35rem 1.25rem;
   width: 3.75em;
   height: 3.75em;
   display: flex;
@@ -80,14 +79,14 @@
   transform: translateY(4px) translateZ(0);
 }
 
-/* Toggled → X (revert to full rectangle so the X looks clean) */
+/* Toggled → X (two crossing needles: points at top, wide at bottom) */
 .target-burger.toggled .bun {
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
   transform: rotate(45deg) translateZ(0);
 }
 
 .target-burger.toggled .bun:last-child {
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
   transform: rotate(-45deg) translateZ(0);
 }
 
