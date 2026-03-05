@@ -515,7 +515,7 @@ function ProfileBlock({
     <>
       {/* Circle portrait — top center, fills crown interior */}
       <div
-        className="absolute left-1/2 z-20 -translate-x-1/2 top-[5%] md:top-[1%]"
+        className="absolute left-1/2 z-20 -translate-x-1/2 top-[5%] md:top-[8%]"
         style={{
           opacity: photoOpacity,
           width: "clamp(320px, 80vw, 480px)",
