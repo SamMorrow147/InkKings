@@ -7,6 +7,20 @@ export const metadata: Metadata = {
     "Get in touch with Ink Kings Tattoo in Otsego, MN. For custom art, booking, or tattoo openings, use our request form.",
 };
 
+const inputStyle = {
+  width: "100%",
+  maxWidth: 360,
+  margin: "0 auto",
+  display: "block",
+  background: "rgba(255,255,255,0.06)",
+  border: "1px solid rgba(255,255,255,0.2)",
+  borderRadius: 4,
+  padding: "0.75rem 1rem",
+  color: "#f5f5f5",
+  fontSize: "1rem",
+  fontFamily: '"myriad-pro", "Helvetica Neue", Arial, sans-serif',
+} as const;
+
 export default function ContactPage() {
   return (
     <main
@@ -65,6 +79,37 @@ export default function ContactPage() {
         >
           Contact
         </h1>
+
+        <div style={{ marginBottom: "1.25rem", textAlign: "center" }}>
+          <input
+            type="text"
+            placeholder="Your message"
+            style={{ ...inputStyle, marginBottom: "0.75rem" }}
+            aria-label="Message"
+          />
+        </div>
+        <div style={{ marginBottom: "0.75rem", textAlign: "center" }}>
+          <input
+            type="tel"
+            placeholder="Phone number"
+            style={inputStyle}
+            aria-label="Phone number"
+          />
+        </div>
+        <div style={{ marginBottom: "1.5rem", textAlign: "center" }}>
+          <input
+            type="email"
+            placeholder="Email"
+            style={inputStyle}
+            aria-label="Email"
+          />
+        </div>
+        <div style={{ marginBottom: "2.5rem", textAlign: "center" }}>
+          <button type="submit" className="gold-btn">
+            <span>SUBMIT</span>
+          </button>
+        </div>
+
         <p
           style={{
             fontFamily: '"myriad-pro", "Helvetica Neue", Arial, sans-serif',
