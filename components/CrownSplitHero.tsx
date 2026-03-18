@@ -173,9 +173,9 @@ function CrownScene({
       centerState = 1;
     }
 
-    // New final section thresholds (progress 7 → 9, section is 1000vh)
-    const NEW_SEC_START    = 7.0;
-    const NEW_SEC_TILT_END = 8.5;
+    // New final section thresholds — starts after all 6 artist profiles
+    const NEW_SEC_START    = 8.0;
+    const NEW_SEC_TILT_END = 9.5;
     const isNewSection     = progress >= NEW_SEC_START;
 
     // ── scale ──────────────────────────────────────────────────────────────
@@ -506,6 +506,14 @@ const profiles = [
     status:      "Accepting New Clients",
     bio:         "Specializing in black and grey realism and color realism. Looking forward to working with clients on creative, challenging pieces.",
     photo:       "/John.png",
+    booksClosed: false,
+  },
+  {
+    name:        "Breaelle",
+    slug:        "breaelle",
+    status:      "Accepting New Clients",
+    bio:         "Artist at Ink Kings Tattoo. Bio and details coming soon.",
+    photo:       "/Breaelle.png",
     booksClosed: false,
   },
 ];
@@ -846,12 +854,12 @@ export default function CrownSplitHero() {
           const photoFadeOut = fadeIn + 1.4;
           const textOp = isLast
             ? clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
-              clamp(1 - (scrollProgress - 6.9) / 0.2, 0, 1)
+              clamp(1 - (scrollProgress - 7.9) / 0.2, 0, 1)
             : clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
               clamp(1 - (scrollProgress - photoFadeOut) / 0.25, 0, 1);
           const photoOp = isLast
             ? clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
-              clamp(1 - (scrollProgress - 6.9) / 0.2, 0, 1)
+              clamp(1 - (scrollProgress - 7.9) / 0.2, 0, 1)
             : clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
               clamp(1 - (scrollProgress - photoFadeOut) / 0.25, 0, 1);
 
@@ -868,7 +876,7 @@ export default function CrownSplitHero() {
 
         {/* Site credit tag — fades in after scrolling further past START YOUR PIECE */}
         {(() => {
-          const op = clamp((scrollProgress - 7.9) / 0.25, 0, 1);
+          const op = clamp((scrollProgress - 8.9) / 0.25, 0, 1);
           if (op <= 0) return null;
           const small = isMobile;
           return (
@@ -907,7 +915,7 @@ export default function CrownSplitHero() {
 
         {/* Last section — centre content (social icons + heading + body + cta) */}
         {(() => {
-          const op = clamp((scrollProgress - 7.0) / 0.3, 0, 1);
+          const op = clamp((scrollProgress - 8.0) / 0.3, 0, 1);
           if (op <= 0) return null;
           const iconStyle: React.CSSProperties = {
             filter: "brightness(0) invert(1)",

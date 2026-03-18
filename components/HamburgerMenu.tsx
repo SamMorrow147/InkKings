@@ -10,6 +10,7 @@ const ARTISTS = [
   { href: "/portfolio/austin", label: "Austin" },
   { href: "/portfolio/nick", label: "Nick" },
   { href: "/portfolio/john", label: "John" },
+  { href: "/portfolio/breaelle", label: "Breaelle" },
 ];
 
 export default function HamburgerMenu({
@@ -104,11 +105,6 @@ export default function HamburgerMenu({
             {/* Events */}
             <li>
               <a href="/events" onClick={closeMenu}>Events</a>
-            </li>
-
-            {/* Blog */}
-            <li>
-              <a href="/blog" onClick={closeMenu}>Blog</a>
             </li>
 
             {/* Aftercare */}

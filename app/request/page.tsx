@@ -46,6 +46,7 @@ const ARTISTS = [
   "Austin Jackels",
   "Nick Gagnon",
   "John Carpenter",
+  "Breaelle",
 ];
 
 const TIMELINES = [
