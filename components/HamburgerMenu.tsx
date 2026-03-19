@@ -114,7 +114,7 @@ export default function HamburgerMenu({
 
             {/* Contact */}
             <li>
-              <a href="/contact" onClick={closeMenu}>Contact</a>
+              <a href="/request" onClick={closeMenu}>Contact</a>
             </li>
           </ul>
 
