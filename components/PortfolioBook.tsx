@@ -26,7 +26,10 @@ const Page = forwardRef<HTMLDivElement, { image: string; alt: string }>(
         width: "100%",
         height: "100%",
         overflow: "hidden",
-        background: "#111",
+        background: "#000",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <img
@@ -34,9 +37,11 @@ const Page = forwardRef<HTMLDivElement, { image: string; alt: string }>(
         alt={alt}
         draggable={false}
         style={{
-          width: "100%",
+          maxWidth: "100%",
+          maxHeight: "100%",
+          width: "auto",
           height: "100%",
-          objectFit: "cover",
+          objectFit: "contain",
           display: "block",
           pointerEvents: "none",
         }}
@@ -403,7 +408,7 @@ export default function PortfolioBook({ slides }: PortfolioBookProps) {
                   style={{
                     width: "100%",
                     height: "100%",
-                    background: "#111",
+                    background: "#000",
                   }}
                 />
               )

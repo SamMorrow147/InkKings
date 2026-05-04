@@ -104,12 +104,14 @@ function CrownScene({
   startZoom: boolean;
   skipIntro: boolean;
 }) {
-  const { viewport, size } = useThree();
+  const { viewport, size, gl, scene, camera } = useThree();
   const groupRef = useRef<Group>(null);
 
   const introStartTimeRef = useRef<number | null>(null);
   const introDoneRef = useRef(skipIntro); // already done if skipping
+  const poseSnappedRef = useRef(false);   // first post-intro frame snaps rotation/position
   const meshReadyRef = useRef(false);
+  const compiledRef = useRef(false);      // GPU shaders/textures uploaded
   const onIntroDoneRef = useRef(onIntroDone);
   onIntroDoneRef.current = onIntroDone;
 
@@ -129,6 +131,18 @@ function CrownScene({
       meshReadyRef.current = true;
     }
 
+    // Pre-compile materials/textures so the first VISIBLE frame doesn't
+    // hitch on shader compilation or texture upload (which would otherwise
+    // eat the first ~80ms of the fall and make the crown appear to "pop in").
+    if (!compiledRef.current) {
+      try {
+        gl.compile(scene, camera);
+      } catch {
+        /* compile is best-effort; fall through if anything throws */
+      }
+      compiledRef.current = true;
+    }
+
     // Stay hidden until text animation is done and we're told to start
     if (!startZoom) {
       groupRef.current.visible = false;
@@ -138,18 +152,52 @@ function CrownScene({
 
     // Start intro timer only once we're allowed to zoom.
     // When skipIntro is true, backdate the start so rawT is immediately 1.
-    const INTRO_DURATION = 1.5;
+    const INTRO_DURATION = 2.0;
+    const FALL_END       = 0.32;   // gravity-driven fall toward the surface (~0.64s)
     if (introStartTimeRef.current === null) {
       introStartTimeRef.current = skipIntro
         ? clock.getElapsedTime() - INTRO_DURATION - 0.01
         : clock.getElapsedTime();
     }
 
-    // ── intro zoom (3× → 1× over 1.5s with ease-out) ───────────────────
+    // ── intro: top-down crown drops onto a marble surface, then bounces
+    //          three times while spinning into its final orientation ──
     const elapsed = clock.getElapsedTime() - introStartTimeRef.current;
     const rawT = clamp(elapsed / INTRO_DURATION, 0, 1);
-    const easedT = easeOutCubic(rawT);
-    const introMultiplier = MathUtils.lerp(3.0, 1.0, easedT);
+
+    let introMultiplier: number;
+    let introTiltZ:     number;  // side-to-side rock (rotation.z during intro)
+    let introTiltX:     number;  // forward/back rock (offset to π/2 base)
+    let introSpinY:     number;  // rotation.y during intro
+
+    if (rawT < FALL_END) {
+      // Phase 1 — fall (ease-in t² simulates gravitational acceleration).
+      //   Starts at 4× scale so the rim bleeds off the screen edges, then
+      //   shrinks toward 1× as it "recedes" onto the marble surface.
+      //   Pre-tilt so an edge leads the first impact, and a small amount
+      //   of spin is "stored" so the crown is already rotating on contact.
+      const u     = rawT / FALL_END;
+      const eased = u * u;
+      introMultiplier = MathUtils.lerp(4.0, 1.0, eased);
+      introTiltZ      = MathUtils.lerp(0.10, 0.22, u);
+      introTiltX      = MathUtils.lerp(0.05, 0.08, u);
+      introSpinY      = -Math.PI * 0.5;  // pre-rotation carried into impact
+    } else {
+      // Phase 2 — bounce + spin (decays together to a clean rest pose).
+      // tilt extremes at u = 0, 0.4, 0.8 alternate sides like a real rock,
+      // exp-decay shrinks each successive impact (≈0.22 → −0.13 → +0.04).
+      const u     = (rawT - FALL_END) / (1.0 - FALL_END);
+      const decay = Math.exp(-u * 2.0);
+      introTiltZ  =  0.22 * Math.cos(u * Math.PI * 2.5) * decay;
+      introTiltX  =  0.08 * Math.cos(u * Math.PI * 2.5 + Math.PI / 4) * decay;
+      // Scale lifts upward between impacts (top-down "hop" off the surface);
+      // |sin| is 0 at every impact and peaks midway between them.
+      const lift  = Math.abs(Math.sin(u * Math.PI * 2.5));
+      introMultiplier = 1.0 + lift * 0.18 * decay;
+      // Spin completes during the bouncing — eases to zero alongside the
+      // diminishing rocks so motion stops as one event, not in two stages.
+      introSpinY = MathUtils.lerp(-Math.PI * 0.5, 0, easeOutCubic(u));
+    }
 
     if (rawT >= 1 && !introDoneRef.current) {
       introDoneRef.current = true;
@@ -173,9 +221,9 @@ function CrownScene({
       centerState = 1;
     }
 
-    // New final section thresholds — starts after all 6 artist profiles
-    const NEW_SEC_START    = 8.0;
-    const NEW_SEC_TILT_END = 9.5;
+    // New final section thresholds — starts after all 5 artist profiles
+    const NEW_SEC_START    = 7.0;
+    const NEW_SEC_TILT_END = 8.5;
     const isNewSection     = progress >= NEW_SEC_START;
 
     // ── scale ──────────────────────────────────────────────────────────────
@@ -216,25 +264,7 @@ function CrownScene({
       ? MathUtils.lerp(artistLift, newSecRestY, easeOutCubic(newSecDropT))
       : artistLift;
 
-    groupRef.current.position.x = MathUtils.lerp(
-      groupRef.current.position.x, targetX, 0.06,
-    );
-    groupRef.current.position.y = MathUtils.lerp(
-      groupRef.current.position.y, targetY, 0.06,
-    );
-
-    // ── rotation ──────────────────────────────────────────────────────────
-    if (rawT >= 1) {
-      groupRef.current.rotation.y = MathUtils.lerp(
-        groupRef.current.rotation.y,
-        scrollYRef.current * 0.003,
-        0.08,
-      );
-    } else {
-      groupRef.current.rotation.y = 0;
-    }
-
-    // rotation X (forward/back tilt)
+    // ── rotation targets (computed before snap so we can use them) ────────
     let tiltTarget: number;
     if (isNewSection) {
       const t = clamp(
@@ -249,22 +279,46 @@ function CrownScene({
     } else {
       tiltTarget = 0;
     }
+    const zTarget = isNewSection ? 0.28 : 0;
+    const yRotTarget = scrollYRef.current * 0.003;
 
-    if (rawT >= 1) {
-      groupRef.current.rotation.x = MathUtils.lerp(
-        groupRef.current.rotation.x,
-        tiltTarget,
-        0.06,
-      );
-    } else {
-      groupRef.current.rotation.x = (Math.PI / 2);
+    // First frame after the intro completes: snap rotation/position to their
+    // scroll-driven targets so a skipped intro (back-navigation from a
+    // sub-page) lands directly in pose instead of slowly lerping in.
+    if (rawT >= 1 && !poseSnappedRef.current) {
+      groupRef.current.position.x = targetX;
+      groupRef.current.position.y = targetY;
+      groupRef.current.rotation.x = tiltTarget;
+      groupRef.current.rotation.y = yRotTarget;
+      groupRef.current.rotation.z = zTarget;
+      poseSnappedRef.current = true;
+      return;
     }
 
-    // rotation Z (left-low / right-high diagonal in new section)
-    const zTarget = isNewSection ? 0.28 : 0;
-    groupRef.current.rotation.z = MathUtils.lerp(
-      groupRef.current.rotation.z, zTarget, 0.06,
+    // ── position ──────────────────────────────────────────────────────────
+    groupRef.current.position.x = MathUtils.lerp(
+      groupRef.current.position.x, targetX, 0.06,
     );
+    groupRef.current.position.y = MathUtils.lerp(
+      groupRef.current.position.y, targetY, 0.06,
+    );
+
+    // ── rotation ──────────────────────────────────────────────────────────
+    if (rawT >= 1) {
+      groupRef.current.rotation.y = MathUtils.lerp(
+        groupRef.current.rotation.y, yRotTarget, 0.08,
+      );
+      groupRef.current.rotation.x = MathUtils.lerp(
+        groupRef.current.rotation.x, tiltTarget, 0.06,
+      );
+      groupRef.current.rotation.z = MathUtils.lerp(
+        groupRef.current.rotation.z, zTarget, 0.06,
+      );
+    } else {
+      groupRef.current.rotation.y = introSpinY;
+      groupRef.current.rotation.x = (Math.PI / 2) + introTiltX;
+      groupRef.current.rotation.z = introTiltZ;
+    }
   });
 
   return (
@@ -508,14 +562,6 @@ const profiles = [
     photo:       "/John.png",
     booksClosed: false,
   },
-  {
-    name:        "Breaelle",
-    slug:        "breaelle",
-    status:      "Accepting New Clients",
-    bio:         "Artist at Ink Kings Tattoo. Bio and details coming soon.",
-    photo:       "/Breaelle.png",
-    booksClosed: false,
-  },
 ];
 
 type Profile = (typeof profiles)[number];
@@ -600,13 +646,25 @@ export default function CrownSplitHero() {
 
   // Read sessionStorage synchronously so skipIntro is correct on the very first render,
   // preventing even a single frame of the intro animation when returning from a sub-page.
+  // A hard reload (Cmd+R / refresh) always plays the full intro — only true
+  // back-navigation from a sub-page bypasses it.
   const [skipIntro] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
-    return sessionStorage.getItem(SCROLL_KEY) !== null;
+    if (sessionStorage.getItem(SCROLL_KEY) === null) return false;
+    const navEntries = performance.getEntriesByType(
+      "navigation",
+    ) as PerformanceNavigationTiming[];
+    if (navEntries[0]?.type === "reload") return false;
+    return true;
   });
 
   const [textAnimDone, setTextAnimDone] = useState(skipIntro);
   const [introDone, setIntroDone] = useState(skipIntro);
+  // Defer the (heavy) liquid-shader background until the crown intro is done
+  // so first paint isn't fighting two WebGL contexts at once. On back-nav
+  // (skipIntro) we mount it immediately so the page looks settled.
+  const [bgMounted, setBgMounted] = useState(skipIntro);
+  const [bgVisible, setBgVisible] = useState(skipIntro);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -617,19 +675,24 @@ export default function CrownSplitHero() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // On mount: restore saved scroll position and skip intro
+  // On mount: restore saved scroll position only when we're actually skipping
+  // the intro (back-navigation). On a hard reload, drop the stale value and
+  // start the user at the top so they can enjoy the full intro.
   useEffect(() => {
     const saved = sessionStorage.getItem(SCROLL_KEY);
-    if (saved !== null) {
-      const y = parseInt(saved, 10);
-      sessionStorage.removeItem(SCROLL_KEY);
-      setTextAnimDone(true);
-      setIntroDone(true);
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: y, behavior: "instant" as ScrollBehavior });
-      });
+    if (saved === null) return;
+    sessionStorage.removeItem(SCROLL_KEY);
+    if (!skipIntro) {
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      return;
     }
-  }, []);
+    const y = parseInt(saved, 10);
+    setTextAnimDone(true);
+    setIntroDone(true);
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: y, behavior: "instant" as ScrollBehavior });
+    });
+  }, [skipIntro]);
 
   // Continuously save scroll position so portfolio pages can restore it
   useEffect(() => {
@@ -650,6 +713,18 @@ export default function CrownSplitHero() {
     };
   }, [introDone]);
 
+  // Bring up the animated background after the crown intro finishes:
+  //   1) mount the LiquidBackground a beat after the intro lands so its
+  //      WebGL setup doesn't fight the same frame the crown is settling on,
+  //   2) the actual fade-in is triggered by the shader's onReady callback
+  //      (below) — that way we transition from a real, painted frame
+  //      instead of from a not-yet-compiled black canvas.
+  useEffect(() => {
+    if (!introDone || bgMounted) return;
+    const mountTimer = window.setTimeout(() => setBgMounted(true), 200);
+    return () => window.clearTimeout(mountTimer);
+  }, [introDone, bgMounted]);
+
   useEffect(() => {
     const update = () => {
       scrollYRef.current = window.scrollY;
@@ -665,11 +740,25 @@ export default function CrownSplitHero() {
     clamp(1 - (scrollProgress - 1.9) / 0.2, 0, 1);
 
   return (
-    <section className="relative w-full" style={{ height: "1000vh" }}>
+    <section className="relative w-full" style={{ height: "900vh" }}>
       {/* Anchor for "Meet the Team" deep-links — positioned at the scroll depth where Steve's profile appears */}
       <div id="artists" style={{ position: "absolute", top: "200vh", left: 0, height: 0, pointerEvents: "none" }} />
-      <div className="sticky top-0 h-screen overflow-hidden">
-        <LiquidBackground className="z-0" interactive={false} zoom={2.5} />
+      <div className="sticky top-0 h-screen overflow-hidden bg-black">
+        {bgMounted && (
+          <div
+            className="absolute inset-0 z-0"
+            style={{
+              opacity: bgVisible ? 1 : 0,
+              transition: "opacity 1100ms ease-out",
+            }}
+          >
+            <LiquidBackground
+              interactive={false}
+              zoom={2.5}
+              onReady={() => setBgVisible(true)}
+            />
+          </div>
+        )}
 
         {/* Section 2 overlays — Tattoo.png behind crown */}
         {(() => {
@@ -854,12 +943,12 @@ export default function CrownSplitHero() {
           const photoFadeOut = fadeIn + 1.4;
           const textOp = isLast
             ? clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
-              clamp(1 - (scrollProgress - 7.9) / 0.2, 0, 1)
+              clamp(1 - (scrollProgress - 6.9) / 0.2, 0, 1)
             : clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
               clamp(1 - (scrollProgress - photoFadeOut) / 0.25, 0, 1);
           const photoOp = isLast
             ? clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
-              clamp(1 - (scrollProgress - 7.9) / 0.2, 0, 1)
+              clamp(1 - (scrollProgress - 6.9) / 0.2, 0, 1)
             : clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
               clamp(1 - (scrollProgress - photoFadeOut) / 0.25, 0, 1);
 
@@ -876,7 +965,7 @@ export default function CrownSplitHero() {
 
         {/* Site credit tag — fades in after scrolling further past START YOUR PIECE */}
         {(() => {
-          const op = clamp((scrollProgress - 8.9) / 0.25, 0, 1);
+          const op = clamp((scrollProgress - 7.9) / 0.25, 0, 1);
           if (op <= 0) return null;
           const small = isMobile;
           return (
@@ -915,7 +1004,7 @@ export default function CrownSplitHero() {
 
         {/* Last section — centre content (social icons + heading + body + cta) */}
         {(() => {
-          const op = clamp((scrollProgress - 8.0) / 0.3, 0, 1);
+          const op = clamp((scrollProgress - 7.0) / 0.3, 0, 1);
           if (op <= 0) return null;
           const iconStyle: React.CSSProperties = {
             filter: "brightness(0) invert(1)",

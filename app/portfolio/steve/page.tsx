@@ -10,6 +10,16 @@ export const metadata: Metadata = {
 };
 
 const slides = [
+  { image: "/portfolio/1000043274.JPG", alt: "Tattoo by Steve De Los Reyes" },
+  { image: "/portfolio/1000043276.JPG", alt: "Tattoo by Steve De Los Reyes" },
+  { image: "/portfolio/1000045497.JPG", alt: "Tattoo by Steve De Los Reyes" },
+  { image: "/portfolio/1000045479.JPG", alt: "Tattoo by Steve De Los Reyes" },
+  { image: "/portfolio/1000045380.JPG", alt: "Tattoo by Steve De Los Reyes" },
+  { image: "/portfolio/1000045230.JPG", alt: "Tattoo by Steve De Los Reyes" },
+  { image: "/portfolio/1000045176.JPG", alt: "Tattoo by Steve De Los Reyes" },
+  { image: "/portfolio/1000045137.JPG", alt: "Tattoo by Steve De Los Reyes" },
+  { image: "/portfolio/1000044752.JPG", alt: "Tattoo by Steve De Los Reyes" },
+  { image: "/portfolio/1000044117.JPG", alt: "Tattoo by Steve De Los Reyes" },
   { image: "/portfolio/steve-01.jpg", alt: "Tattoo by Steve De Los Reyes" },
   { image: "/portfolio/steve-02.jpg", alt: "Tattoo by Steve De Los Reyes" },
   { image: "/portfolio/steve-03.jpg", alt: "Tattoo by Steve De Los Reyes" },

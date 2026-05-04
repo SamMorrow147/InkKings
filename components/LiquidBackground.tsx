@@ -15,6 +15,8 @@ type LiquidBackgroundProps = {
   zoom?: number;
   className?: string;
   style?: React.CSSProperties;
+  /** Fires once the first frame has actually rendered to the canvas. */
+  onReady?: () => void;
 };
 
 export default function LiquidBackground({
@@ -27,8 +29,11 @@ export default function LiquidBackground({
   zoom = 1.0,
   className,
   style,
+  onReady,
 }: LiquidBackgroundProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
 
   // Stabilise the dependency — compare by value, not reference
   const colorKey = `${baseColor[0]},${baseColor[1]},${baseColor[2]}`;
@@ -162,10 +167,17 @@ export default function LiquidBackground({
     const timeOffset = Math.random() * 1000;
 
     let animationId = 0;
+    let firstFrameRendered = false;
     const update = (time: number) => {
       animationId = requestAnimationFrame(update);
       program.uniforms.uTime.value = (time * 0.001 + timeOffset) * speed;
       renderer.render({ scene: mesh });
+      if (!firstFrameRendered) {
+        firstFrameRendered = true;
+        // Defer one more frame so the GPU has actually composited pixels
+        // before consumers begin a fade-in.
+        requestAnimationFrame(() => onReadyRef.current?.());
+      }
     };
 
     animationId = requestAnimationFrame(update);

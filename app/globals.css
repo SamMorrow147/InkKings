@@ -302,3 +302,17 @@ body {
     height: 10px;
   }
 }
+
+/* ── Portfolio Book (react-pageflip) — force solid black page backgrounds ── */
+.portfolio-book-mobile,
+.portfolio-book-desktop,
+.portfolio-book-mobile .stf__parent,
+.portfolio-book-desktop .stf__parent,
+.portfolio-book-mobile .stf__block,
+.portfolio-book-desktop .stf__block,
+.portfolio-book-mobile .stf__item,
+.portfolio-book-desktop .stf__item,
+.portfolio-book-mobile .stf__wrapper,
+.portfolio-book-desktop .stf__wrapper {
+  background-color: #000 !important;
+}
