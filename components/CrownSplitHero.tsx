@@ -222,8 +222,8 @@ function CrownScene({
     }
 
     // New final section thresholds — starts after all 6 artist profiles
-    const NEW_SEC_START    = 8.0;
-    const NEW_SEC_TILT_END = 9.5;
+    const NEW_SEC_START    = 8.4;
+    const NEW_SEC_TILT_END = 9.9;
     const isNewSection     = progress >= NEW_SEC_START;
 
     // ── scale ──────────────────────────────────────────────────────────────
@@ -748,7 +748,7 @@ export default function CrownSplitHero() {
     clamp(1 - (scrollProgress - 1.9) / 0.2, 0, 1);
 
   return (
-    <section className="relative w-full" style={{ height: "1000vh" }}>
+    <section className="relative w-full" style={{ height: "1100vh" }}>
       {/* Anchor for "Meet the Team" deep-links — positioned at the scroll depth where Steve's profile appears */}
       <div id="artists" style={{ position: "absolute", top: "200vh", left: 0, height: 0, pointerEvents: "none" }} />
       <div className="sticky top-0 h-screen overflow-hidden bg-black">
@@ -951,12 +951,12 @@ export default function CrownSplitHero() {
           const photoFadeOut = fadeIn + 1.4;
           const textOp = isLast
             ? clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
-              clamp(1 - (scrollProgress - 7.9) / 0.2, 0, 1)
+              clamp(1 - (scrollProgress - 8.4) / 0.25, 0, 1)
             : clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
               clamp(1 - (scrollProgress - photoFadeOut) / 0.25, 0, 1);
           const photoOp = isLast
             ? clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
-              clamp(1 - (scrollProgress - 7.9) / 0.2, 0, 1)
+              clamp(1 - (scrollProgress - 8.4) / 0.25, 0, 1)
             : clamp((scrollProgress - photoFadeIn) / 0.25, 0, 1) *
               clamp(1 - (scrollProgress - photoFadeOut) / 0.25, 0, 1);
 
@@ -973,7 +973,7 @@ export default function CrownSplitHero() {
 
         {/* Site credit tag — fades in after scrolling further past START YOUR PIECE */}
         {(() => {
-          const op = clamp((scrollProgress - 8.9) / 0.25, 0, 1);
+          const op = clamp((scrollProgress - 9.4) / 0.25, 0, 1);
           if (op <= 0) return null;
           const small = isMobile;
           return (
@@ -1012,7 +1012,7 @@ export default function CrownSplitHero() {
 
         {/* Last section — centre content (social icons + heading + body + cta) */}
         {(() => {
-          const op = clamp((scrollProgress - 8.0) / 0.3, 0, 1);
+          const op = clamp((scrollProgress - 8.4) / 0.3, 0, 1);
           if (op <= 0) return null;
           const iconStyle: React.CSSProperties = {
             filter: "brightness(0) invert(1)",
