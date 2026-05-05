@@ -129,9 +129,14 @@ export default function StevePortfolioPage() {
           </p>
 
           <div style={{ marginBottom: "2.5rem", display: "flex", justifyContent: "center" }}>
-            <span className="maroon-btn" aria-label="Books currently closed">
-              <span>BOOKS CURRENTLY CLOSED</span>
-            </span>
+            <Link
+              href="/booking"
+              className="maroon-btn"
+              aria-label="Submit information to be accepted"
+              style={{ textDecoration: "none" }}
+            >
+              <span>SUBMIT INFORMATION TO BE ACCEPTED</span>
+            </Link>
           </div>
 
           <p

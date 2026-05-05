@@ -525,7 +525,7 @@ const profiles = [
   {
     name:        "Steve De Los Reyes",
     slug:        "steve",
-    status:      "Books Are Currently Closed",
+    status:      "Submit for Consideration",
     bio:         "Award-winning artist and owner of Ink Kings Tattoo in Otsego, MN. With over 30 years as an artist and a degree in Technical Illustration from Cal State Fullerton, Steve brings expertise in realism, portraits, and wildlife. Tattooing since 2009 — opening Ink Kings in 2016.",
     photo:       "/Steve.png",
     booksClosed: true,
@@ -614,9 +614,9 @@ function ProfileBlock({
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           {profile.booksClosed ? (
             <>
-              <span className="maroon-btn" aria-label="Books closed">
-                <span>BOOKS CLOSED</span>
-              </span>
+              <a href="/request" className="maroon-btn" aria-label="Submit for consideration">
+                <span>SUBMIT FOR CONSIDERATION</span>
+              </a>
               <a href={`/portfolio/${profile.slug}`} className="gold-btn">
                 <span>PORTFOLIO</span>
               </a>
