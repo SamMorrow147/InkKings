@@ -16,6 +16,7 @@ interface Slide {
 
 interface PortfolioBookProps {
   slides: Slide[];
+  title?: string;
 }
 
 const Page = forwardRef<HTMLDivElement, { image: string; alt: string }>(
@@ -51,7 +52,7 @@ const Page = forwardRef<HTMLDivElement, { image: string; alt: string }>(
 );
 Page.displayName = "Page";
 
-export default function PortfolioBook({ slides }: PortfolioBookProps) {
+export default function PortfolioBook({ slides, title }: PortfolioBookProps) {
   const bookRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [isMobile, setIsMobile] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 400, height: 550 });
@@ -129,6 +130,22 @@ export default function PortfolioBook({ slides }: PortfolioBookProps) {
         padding: isMobile ? "2.5rem 1rem 0" : "0 1rem",
       }}
     >
+      {isMobile && title && (
+        <h2
+          style={{
+            fontFamily: '"trajan-pro-3", serif',
+            fontSize: "clamp(1rem, 4vw, 1.4rem)",
+            fontWeight: 600,
+            letterSpacing: "0.05em",
+            fontVariant: "small-caps",
+            color: "rgba(255,255,255,0.45)",
+            margin: 0,
+          }}
+        >
+          {title}
+        </h2>
+      )}
+
       <div
         style={{
           display: "flex",

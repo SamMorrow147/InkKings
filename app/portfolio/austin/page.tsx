@@ -154,7 +154,7 @@ export default function AustinPortfolioPage() {
             overflow: "hidden",
           }}
         >
-          <PortfolioBook slides={slides} />
+          <PortfolioBook slides={slides} title="Austin's Portfolio" />
         </section>
       </div>
     </main>

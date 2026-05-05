@@ -114,7 +114,7 @@ export default function NickPortfolioPage() {
 
         {/* Portfolio slider */}
         <section className="order-1 md:order-2" style={{ background: "#000", padding: "0 0 4rem", overflow: "hidden" }}>
-          <PortfolioBook slides={slides} />
+          <PortfolioBook slides={slides} title="Nick's Portfolio" />
         </section>
       </div>
     </main>
