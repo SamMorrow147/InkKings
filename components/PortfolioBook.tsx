@@ -38,11 +38,10 @@ const Page = forwardRef<HTMLDivElement, { image: string; alt: string }>(
         alt={alt}
         draggable={false}
         style={{
-          maxWidth: "100%",
-          maxHeight: "100%",
-          width: "auto",
+          width: "100%",
           height: "100%",
           objectFit: "contain",
+          objectPosition: "center",
           display: "block",
           pointerEvents: "none",
         }}
