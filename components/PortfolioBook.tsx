@@ -126,7 +126,7 @@ export default function PortfolioBook({ slides }: PortfolioBookProps) {
         flexDirection: "column",
         alignItems: "center",
         gap: "1.5rem",
-        padding: "0 1rem",
+        padding: isMobile ? "2.5rem 1rem 0" : "0 1rem",
       }}
     >
       <div

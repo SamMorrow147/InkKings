@@ -14,10 +14,10 @@ const slides = [
   { image: "/portfolio/Breaella/IMG_0207.JPEG", alt: "Tattoo by Breaella De Los Reyes" },
   { image: "/portfolio/Breaella/IMG_0208.JPEG", alt: "Tattoo by Breaella De Los Reyes" },
   { image: "/portfolio/Breaella/IMG_0209.JPEG", alt: "Tattoo by Breaella De Los Reyes" },
-  { image: "/portfolio/Breaella/IMG_0210.JPEG", alt: "Tattoo by Breaella De Los Reyes" },
   { image: "/portfolio/Breaella/IMG_0211.JPG", alt: "Tattoo by Breaella De Los Reyes" },
   { image: "/portfolio/Breaella/IMG_0212.JPG", alt: "Tattoo by Breaella De Los Reyes" },
   { image: "/portfolio/Breaella/IMG_0213.JPEG", alt: "Tattoo by Breaella De Los Reyes" },
+  { image: "/portfolio/Breaella/IMG_0210.JPEG", alt: "Tattoo by Breaella De Los Reyes" },
 ];
 
 export default function BreaellaPortfolioPage() {

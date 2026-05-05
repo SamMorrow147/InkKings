@@ -1,6 +1,12 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+
+// useLayoutEffect emits a warning during SSR; fall back to useEffect on the
+// server so client-only DOM measurements stay synchronous before paint
+// without polluting the dev console.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
@@ -652,27 +658,17 @@ const SCROLL_KEY = "ik_scroll_pos";
 export default function CrownSplitHero() {
   const scrollYRef = useRef(0);
 
-  // Read sessionStorage synchronously so skipIntro is correct on the very first render,
-  // preventing even a single frame of the intro animation when returning from a sub-page.
-  // A hard reload (Cmd+R / refresh) always plays the full intro — only true
-  // back-navigation from a sub-page bypasses it.
-  const [skipIntro] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    if (sessionStorage.getItem(SCROLL_KEY) === null) return false;
-    const navEntries = performance.getEntriesByType(
-      "navigation",
-    ) as PerformanceNavigationTiming[];
-    if (navEntries[0]?.type === "reload") return false;
-    return true;
-  });
-
-  const [textAnimDone, setTextAnimDone] = useState(skipIntro);
-  const [introDone, setIntroDone] = useState(skipIntro);
+  // Initial state must match what the server renders so hydration succeeds.
+  // We detect back-navigation in a layout effect below (runs before paint),
+  // which lets us skip the intro without producing a hydration mismatch.
+  const [skipIntro, setSkipIntro] = useState(false);
+  const [textAnimDone, setTextAnimDone] = useState(false);
+  const [introDone, setIntroDone] = useState(false);
   // Defer the (heavy) liquid-shader background until the crown intro is done
-  // so first paint isn't fighting two WebGL contexts at once. On back-nav
-  // (skipIntro) we mount it immediately so the page looks settled.
-  const [bgMounted, setBgMounted] = useState(skipIntro);
-  const [bgVisible, setBgVisible] = useState(skipIntro);
+  // so first paint isn't fighting two WebGL contexts at once. On back-nav we
+  // promote it immediately in the layout effect so the page looks settled.
+  const [bgMounted, setBgMounted] = useState(false);
+  const [bgVisible, setBgVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -683,24 +679,34 @@ export default function CrownSplitHero() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // On mount: restore saved scroll position only when we're actually skipping
-  // the intro (back-navigation). On a hard reload, drop the stale value and
-  // start the user at the top so they can enjoy the full intro.
-  useEffect(() => {
+  // Detect back-navigation from a sub-page synchronously before the first
+  // paint. If we have a saved scroll position AND the navigation type isn't a
+  // reload, skip the intro and restore the user's prior scroll. A hard reload
+  // (Cmd+R) always plays the full intro.
+  useIsomorphicLayoutEffect(() => {
     const saved = sessionStorage.getItem(SCROLL_KEY);
     if (saved === null) return;
     sessionStorage.removeItem(SCROLL_KEY);
-    if (!skipIntro) {
+
+    const navEntries = performance.getEntriesByType(
+      "navigation",
+    ) as PerformanceNavigationTiming[];
+    if (navEntries[0]?.type === "reload") {
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
       return;
     }
-    const y = parseInt(saved, 10);
+
+    setSkipIntro(true);
     setTextAnimDone(true);
     setIntroDone(true);
+    setBgMounted(true);
+    setBgVisible(true);
+
+    const y = parseInt(saved, 10);
     requestAnimationFrame(() => {
       window.scrollTo({ top: y, behavior: "instant" as ScrollBehavior });
     });
-  }, [skipIntro]);
+  }, []);
 
   // Continuously save scroll position so portfolio pages can restore it
   useEffect(() => {
