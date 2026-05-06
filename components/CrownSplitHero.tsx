@@ -29,7 +29,7 @@ const clamp = (v: number, lo: number, hi: number) =>
 // ─── 3-D crown mesh (Vectary export with MTL + textures) ─────────────────────
 const MODEL_DIR = "/models/gold_crown_1-7";
 
-function CrownMesh() {
+export function CrownMesh() {
   const materials = useLoader(
     MTLLoader,
     `${MODEL_DIR}/gold_crown_1.mtl`,
@@ -351,8 +351,8 @@ function Section1Text({ onAnimDone }: { onAnimDone: () => void }) {
   // Fire only after the type is fully written: TATTOO fill ends at 1500ms + 400ms = 1900ms; add pause before crown
   useEffect(() => {
     if (firedRef.current) return;
-    const typeEndMs = 1900;
-    const pauseBeforeCrownMs = 400;
+    const typeEndMs = 1300;
+    const pauseBeforeCrownMs = 100;
     const timer = setTimeout(() => {
       firedRef.current = true;
       onAnimDone();

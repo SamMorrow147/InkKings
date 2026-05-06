@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import PortfolioBook from "@/components/PortfolioBook";
+import SpinningCrown from "@/components/SpinningCrown";
 
 export const metadata: Metadata = {
   title: "Hunter Hulley — Portfolio | Ink Kings Tattoo",
@@ -53,8 +54,11 @@ export default function HunterPortfolioPage() {
       <div className="flex flex-col">
         {/* About the artist */}
         <section className="order-2 md:order-1" style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "2rem 1.5rem 4rem", maxWidth: 760, margin: "0 auto", width: "100%" }}>
-          <div style={{ width: "clamp(220px,50vw,320px)", height: "clamp(220px,50vw,320px)", borderRadius: "50%", overflow: "hidden", marginBottom: "2rem", maskImage: "radial-gradient(circle, black 55%, transparent 80%)", WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 80%)", flexShrink: 0 }}>
-            <Image src="/Hunter.png" alt="Hunter Hulley" width={320} height={320} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
+          <div style={{ position: "relative", width: "clamp(340px,78vw,520px)", height: "clamp(340px,78vw,520px)", marginBottom: "2rem", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <SpinningCrown />
+            <div style={{ position: "relative", zIndex: 1, width: "clamp(220px,50vw,320px)", height: "clamp(220px,50vw,320px)", borderRadius: "50%", overflow: "hidden", maskImage: "radial-gradient(circle, black 55%, transparent 80%)", WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 80%)" }}>
+              <Image src="/Hunter.png" alt="Hunter Hulley" width={320} height={320} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} priority />
+            </div>
           </div>
 
           <h1 style={{ fontSize: "clamp(1.8rem,5vw,3rem)", fontWeight: 600, letterSpacing: "0.05em", margin: "0 0 0.5rem" }}>

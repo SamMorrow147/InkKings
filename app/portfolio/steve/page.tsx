@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import PortfolioBook from "@/components/PortfolioBook";
+import SpinningCrown from "@/components/SpinningCrown";
 
 export const metadata: Metadata = {
   title: "Steve De Los Reyes — Portfolio | Ink Kings Tattoo",
@@ -84,24 +85,38 @@ export default function StevePortfolioPage() {
         >
           <div
             style={{
-              width: "clamp(220px, 50vw, 320px)",
-              height: "clamp(220px, 50vw, 320px)",
-              borderRadius: "50%",
-              overflow: "hidden",
+              position: "relative",
+              width: "clamp(340px, 78vw, 520px)",
+              height: "clamp(340px, 78vw, 520px)",
               marginBottom: "2rem",
-              maskImage: "radial-gradient(circle, black 55%, transparent 80%)",
-              WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 80%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               flexShrink: 0,
             }}
           >
-            <Image
-              src="/Steve.png"
-              alt="Steve De Los Reyes"
-              width={320}
-              height={320}
-              style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
-              priority
-            />
+            <SpinningCrown />
+            <div
+              style={{
+                position: "relative",
+                zIndex: 1,
+                width: "clamp(220px, 50vw, 320px)",
+                height: "clamp(220px, 50vw, 320px)",
+                borderRadius: "50%",
+                overflow: "hidden",
+                maskImage: "radial-gradient(circle, black 55%, transparent 80%)",
+                WebkitMaskImage: "radial-gradient(circle, black 55%, transparent 80%)",
+              }}
+            >
+              <Image
+                src="/Steve.png"
+                alt="Steve De Los Reyes"
+                width={320}
+                height={320}
+                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
+                priority
+              />
+            </div>
           </div>
 
           <h1
