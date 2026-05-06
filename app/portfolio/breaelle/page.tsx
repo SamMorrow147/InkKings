@@ -5,23 +5,23 @@ import PortfolioBook from "@/components/PortfolioBook";
 import SpinningCrown from "@/components/SpinningCrown";
 
 export const metadata: Metadata = {
-  title: "Breaella De Los Reyes — Portfolio | Ink Kings Tattoo",
+  title: "Breaelle De Los Reyes — Portfolio | Ink Kings Tattoo",
   description:
-    "Portfolio of apprentice tattoo artist Breaella De Los Reyes at Ink Kings Tattoo in Otsego, MN. Specializing in small, detailed, meaningful tattoos.",
+    "Portfolio of apprentice tattoo artist Breaelle De Los Reyes at Ink Kings Tattoo in Otsego, MN. Specializing in small, detailed, meaningful tattoos.",
 };
 
 const slides = [
-  { image: "/portfolio/Breaella/IMG_0206.JPG", alt: "Tattoo by Breaella De Los Reyes" },
-  { image: "/portfolio/Breaella/IMG_0207.JPEG", alt: "Tattoo by Breaella De Los Reyes" },
-  { image: "/portfolio/Breaella/IMG_0208.JPEG", alt: "Tattoo by Breaella De Los Reyes" },
-  { image: "/portfolio/Breaella/IMG_0209.JPEG", alt: "Tattoo by Breaella De Los Reyes" },
-  { image: "/portfolio/Breaella/IMG_0211.JPG", alt: "Tattoo by Breaella De Los Reyes" },
-  { image: "/portfolio/Breaella/IMG_0212.JPG", alt: "Tattoo by Breaella De Los Reyes" },
-  { image: "/portfolio/Breaella/IMG_0213.JPEG", alt: "Tattoo by Breaella De Los Reyes" },
-  { image: "/portfolio/Breaella/IMG_0210.JPEG", alt: "Tattoo by Breaella De Los Reyes" },
+  { image: "/portfolio/Breaella/IMG_0206.JPG", alt: "Tattoo by Breaelle De Los Reyes" },
+  { image: "/portfolio/Breaella/IMG_0207.JPEG", alt: "Tattoo by Breaelle De Los Reyes" },
+  { image: "/portfolio/Breaella/IMG_0208.JPEG", alt: "Tattoo by Breaelle De Los Reyes" },
+  { image: "/portfolio/Breaella/IMG_0209.JPEG", alt: "Tattoo by Breaelle De Los Reyes" },
+  { image: "/portfolio/Breaella/IMG_0211.JPG", alt: "Tattoo by Breaelle De Los Reyes" },
+  { image: "/portfolio/Breaella/IMG_0212.JPG", alt: "Tattoo by Breaelle De Los Reyes" },
+  { image: "/portfolio/Breaella/IMG_0213.JPEG", alt: "Tattoo by Breaelle De Los Reyes" },
+  { image: "/portfolio/Breaella/IMG_0210.JPEG", alt: "Tattoo by Breaelle De Los Reyes" },
 ];
 
-export default function BreaellaPortfolioPage() {
+export default function BreaellePortfolioPage() {
   return (
     <main
       style={{
@@ -92,7 +92,7 @@ export default function BreaellaPortfolioPage() {
             >
               <Image
                 src="/Breaella.PNG"
-                alt="Breaella De Los Reyes"
+                alt="Breaelle De Los Reyes"
                 width={320}
                 height={320}
                 style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
@@ -109,7 +109,7 @@ export default function BreaellaPortfolioPage() {
               margin: "0 0 0.5rem",
             }}
           >
-            Breaella De Los Reyes
+            Breaelle De Los Reyes
           </h1>
 
           <p
@@ -129,6 +129,15 @@ export default function BreaellaPortfolioPage() {
             <a href="/request" className="gold-btn">
               <span>BOOK A SESSION</span>
             </a>
+            <a
+              href="https://www.instagram.com/tattoo_breaelle_/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Breaelle De Los Reyes on Instagram"
+              className="artist-social-link"
+            >
+              <img src="/instagram.svg" alt="" width={24} height={24} style={{ filter: "brightness(0) invert(1)", display: "block" }} />
+            </a>
           </div>
 
           <p
@@ -141,18 +150,18 @@ export default function BreaellaPortfolioPage() {
               maxWidth: 660,
             }}
           >
-            Breaella De Los Reyes is a dedicated tattoo artist and apprentice under her father,
+            Breaelle De Los Reyes is a dedicated tattoo artist and apprentice under her father,
             Steve De Los Reyes. With 5 years of experience at Ink Kings and 1.5 years into her
             apprenticeship, she has developed a strong foundation in the craft while continuing to
             refine her skills every day.
             <br />
             <br />
-            Breaella specializes in small, detailed pieces, focusing on clean, tattooable designs
+            Breaelle specializes in small, detailed pieces, focusing on clean, tattooable designs
             that hold meaning for each client. She values connection and strives to create a
             comfortable, welcoming experience for everyone she works with.
             <br />
             <br />
-            Passionate about growth, artistry, and people, Breaella is committed to evolving her
+            Passionate about growth, artistry, and people, Breaelle is committed to evolving her
             style while bringing her clients&rsquo; ideas to life with precision and care.
           </p>
         </section>
@@ -166,7 +175,7 @@ export default function BreaellaPortfolioPage() {
             overflow: "hidden",
           }}
         >
-          <PortfolioBook slides={slides} title="Breaella's Portfolio" />
+          <PortfolioBook slides={slides} title="Breaelle's Portfolio" />
         </section>
       </div>
     </main>

@@ -569,8 +569,8 @@ const profiles = [
     booksClosed: false,
   },
   {
-    name:        "Breaella De Los Reyes",
-    slug:        "breaella",
+    name:        "Breaelle De Los Reyes",
+    slug:        "breaelle",
     status:      "Apprentice · Accepting New Clients",
     bio:         "Apprentice under her father, Steve De Los Reyes. 5 years at Ink Kings and 1.5 years into her apprenticeship. Specializes in small, detailed pieces — clean, tattooable designs that hold meaning for each client.",
     photo:       "/Breaella.PNG",
